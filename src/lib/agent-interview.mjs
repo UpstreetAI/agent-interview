@@ -3,10 +3,10 @@ import { z } from 'zod';
 
 import {
   Interactor,
-} from '../../../../../lib/interactor.js';
+} from './interactor.js';
 import {
   ValueUpdater,
-} from '../../../../../lib/value-updater.js';
+} from './value-updater.js';
 import {
   generateCharacterImage,
   generateBackgroundImage,
