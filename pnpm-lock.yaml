@@ -11,6 +11,9 @@ importers:
       ansi-escapes:
         specifier: ^7.0.0
         version: 7.0.0
+      character-card-parser:
+        specifier: ^0.0.1
+        version: 0.0.1
       jimp:
         specifier: ^1.6.0
         version: 1.6.0
@@ -428,6 +431,10 @@ packages:
   '@types/node@16.9.1':
     resolution: {integrity: sha512-QpLcX9ZSsq3YYUUnD3nFDY8H7wctAhQj/TFKL8Ya8v5fMm3CFXxo8zStsLAl780ltoYoo1WvKUVGBQK+1ifr7g==}
 
+  '@xmldom/xmldom@0.9.7':
+    resolution: {integrity: sha512-syvR8iIJjpTZ/stv7l89UAViwGFh6lbheeOaqSxkYx9YNmIVvPTRH+CT/fpykFtUx5N+8eSMDRvggF9J8GEPzQ==}
+    engines: {node: '>=14.6'}
+
   abort-controller@3.0.0:
     resolution: {integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==}
     engines: {node: '>=6.5'}
@@ -491,6 +498,12 @@ packages:
     resolution: {integrity: sha512-zgVZuo2WcZgfUEmsn6eO3kINexW8RAE4maiQ8QNs8CtpPCSyMiYsULR3HQYkm3w8FIA3SberyMJMSldGsW+U3w==}
     engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
 
+  character-card-parser@0.0.1:
+    resolution: {integrity: sha512-moPeIrgo7lpF2CV+PAhP00PJUpACkdpsnAWBggw7m2j97NtuWj7/i1W5bWclkJ1SO5Ep5H1Wec8Na2nJhnH28g==}
+
+  character-card-utils@2.0.3:
+    resolution: {integrity: sha512-plZDF4Qjun6qfus4dkFSG7dSQEjM1zDpK4xKWE9HuidlPyzWk5H78N+eiyDP/hqN4AqO232FUywsIwzcVzI+MQ==}
+
   chokidar@4.0.3:
     resolution: {integrity: sha512-Qgzu8kfBvo+cA4962jnP1KkS6Dop5NS6g7R5LFYJr4b8Ub94PPQXUksCw9PvXoeXPRRddRNC5C1JQUR2SMGtnA==}
     engines: {node: '>= 14.16.0'}
@@ -517,6 +530,10 @@ packages:
   consola@3.4.0:
     resolution: {integrity: sha512-EiPU8G6dQG0GFHNR8ljnZFki/8a+cQwEQ+7wpxdChl02Q8HXlwEZWD5lqAF8vC2sEC3Tehr8hy7vErz88LHyUA==}
     engines: {node: ^14.18.0 || >=16.10.0}
+
+  crc-32@0.3.0:
+    resolution: {integrity: sha512-kucVIjOmMc1f0tv53BJ/5WIX+MGLcKuoBhnGqQrgKJNqLByb/sVMWfW/Aw6hw0jgcqjJ2pi9E5y32zOIpaUlsA==}
+    engines: {node: '>=0.8'}
 
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
@@ -562,6 +579,9 @@ packages:
 
   exif-parser@0.1.12:
     resolution: {integrity: sha512-c2bQfLNbMzLPmzQuOr8fy0csy84WmwnER81W88DzTp9CYNPJ6yzOj2EZAh9pywYpqHnshVLHQJ8WzldAyfY+Iw==}
+
+  exifreader@4.26.1:
+    resolution: {integrity: sha512-5u7LooUryPAhdQ/Wn5n/P8WsWJ/DxZ5AToc7gTDlzN41QlecGFEt3y+rXpaOe7GhxZ8cD5t8E7yqrq0oZeVHmw==}
 
   fdir@6.4.3:
     resolution: {integrity: sha512-PMXmW2y1hDDfTSRc9gaXIuCCRpuoz3Kaz8cUelp3smouvfT632ozg2vrT6lJsHKKOF59YLbOGfAWGUcKEfRMQw==}
@@ -633,6 +653,11 @@ packages:
 
   jpeg-js@0.4.4:
     resolution: {integrity: sha512-WZzeDOEtTOBK4Mdsar0IqEU5sMr3vSV2RqkAIzUEV2BHnUfKGyswWFPFwK5EeDo93K3FohSHbLAjj0s1Wzd+dg==}
+
+  json5@2.2.3:
+    resolution: {integrity: sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==}
+    engines: {node: '>=6'}
+    hasBin: true
 
   lilconfig@3.1.3:
     resolution: {integrity: sha512-/vlFKAoH5Cgt3Ie+JLhRbwOsCQePABiU3tJ1egGvyQ+33R/vcwM2Zl2QR/LzjsBeItPt3oSVXapn+m4nQDvpzw==}
@@ -744,6 +769,12 @@ packages:
   pixelmatch@5.3.0:
     resolution: {integrity: sha512-o8mkY4E/+LNUf6LzX96ht6k6CEDi65k9G2rjMtBe9Oo+VPKSvl+0GKHuH/AlG+GA5LPG/i5hrekkxUc3s2HU+Q==}
     hasBin: true
+
+  png-chunk-text@1.0.0:
+    resolution: {integrity: sha512-DEROKU3SkkLGWNMzru3xPVgxyd48UGuMSZvioErCure6yhOc/pRH2ZV+SEn7nmaf7WNf3NdIpH+UTrRdKyq9Lw==}
+
+  png-chunks-extract@1.0.0:
+    resolution: {integrity: sha512-ZiVwF5EJ0DNZyzAqld8BP1qyJBaGOFaq9zl579qfbkcmOwWLLO4I9L8i2O4j3HkI6/35i0nKG2n+dZplxiT89Q==}
 
   pngjs@6.0.0:
     resolution: {integrity: sha512-TRzzuFRRmEoSW/p1KVAmiOgPco2Irlah+bGFCeNfJXxxYGwSw7YwAOAcd7X28K/m5bjBWKsC29KyoMfHbypayg==}
@@ -1315,6 +1346,9 @@ snapshots:
 
   '@types/node@16.9.1': {}
 
+  '@xmldom/xmldom@0.9.7':
+    optional: true
+
   abort-controller@3.0.0:
     dependencies:
       event-target-shim: 5.0.1
@@ -1363,6 +1397,18 @@ snapshots:
 
   chalk@5.4.1: {}
 
+  character-card-parser@0.0.1:
+    dependencies:
+      character-card-utils: 2.0.3
+      exifreader: 4.26.1
+      json5: 2.2.3
+      png-chunk-text: 1.0.0
+      png-chunks-extract: 1.0.0
+
+  character-card-utils@2.0.3:
+    dependencies:
+      zod: 3.24.2
+
   chokidar@4.0.3:
     dependencies:
       readdirp: 4.1.2
@@ -1382,6 +1428,8 @@ snapshots:
   commander@4.1.1: {}
 
   consola@3.4.0: {}
+
+  crc-32@0.3.0: {}
 
   cross-spawn@7.0.6:
     dependencies:
@@ -1436,6 +1484,10 @@ snapshots:
   events@3.3.0: {}
 
   exif-parser@0.1.12: {}
+
+  exifreader@4.26.1:
+    optionalDependencies:
+      '@xmldom/xmldom': 0.9.7
 
   fdir@6.4.3(picomatch@4.0.2):
     optionalDependencies:
@@ -1527,6 +1579,8 @@ snapshots:
 
   jpeg-js@0.4.4: {}
 
+  json5@2.2.3: {}
+
   lilconfig@3.1.3: {}
 
   lines-and-columns@1.2.4: {}
@@ -1615,6 +1669,12 @@ snapshots:
   pixelmatch@5.3.0:
     dependencies:
       pngjs: 6.0.0
+
+  png-chunk-text@1.0.0: {}
+
+  png-chunks-extract@1.0.0:
+    dependencies:
+      crc-32: 0.3.0
 
   pngjs@6.0.0: {}
 
