@@ -31,6 +31,7 @@
     "dotenv-formatter": "^0.0.1",
     "mime": "^4.0.6",
     "mkdirp": "^3.0.1",
+    "openai": "^4.85.2",
     "ora": "^8.2.0",
     "picocolors": "^1.1.1",
     "queue-manager-async": "^0.0.1",
