@@ -16,7 +16,7 @@
   },
   "homepage": "https://github.com/UpstreetAI/agent-interview#readme",
   "scripts": {
-    "build": "tsup ./src/client.ts --dts --format esm --out-dir ./dist"
+    "build": "tsup ./src/interview.ts --dts --format esm --out-dir ./dist"
   },
   "devDependencies": {
     "tsup": "^8.3.6",
