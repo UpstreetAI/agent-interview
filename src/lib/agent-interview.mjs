@@ -1,5 +1,6 @@
 import dedent from 'dedent';
 import { z } from 'zod';
+
 import {
   Interactor,
 } from '../../../../../lib/interactor.js';
