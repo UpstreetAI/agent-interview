@@ -288,8 +288,6 @@ export const create = async (args, opts) => {
   const source = args.source;
   const features = typeof args.feature === 'string' ? JSON.parse(args.feature) : (args.feature || {});
   const yes = args.yes;
-  const force = !!args.force;
-  const forceNoConfirm = !!args.forceNoConfirm;
   // opts
   const jwt = opts.jwt;
   if (!jwt) {
