@@ -2,8 +2,8 @@
   "name": "agent-interview",
   "description": "Create AI agent configurations using LLMs",
   "version": "0.0.1",
-  "main": "./dist/interview.js",
-  "types": "./dist/interview.d.ts",
+  "main": "./dist/agent-interview.js",
+  "types": "./dist/agent-interview.d.ts",
   "type": "module",
   "repository": {
     "type": "git",
@@ -25,10 +25,12 @@
   "dependencies": {
     "ansi-escapes": "^7.0.0",
     "character-card-parser": "^0.0.1",
+    "dedent": "^1.5.3",
     "jimp": "^1.6.0",
     "mime": "^4.0.6",
     "mkdirp": "^3.0.1",
     "ora": "^8.2.0",
-    "picocolors": "^1.1.1"
+    "picocolors": "^1.1.1",
+    "zod": "^3.24.2"
   }
 }
