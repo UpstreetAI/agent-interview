@@ -26,11 +26,13 @@
     "ansi-escapes": "^7.0.0",
     "character-card-parser": "^0.0.1",
     "dedent": "^1.5.3",
-    "jimp": "^1.6.0",
+    "dotenv-formatter": "^0.0.1",
     "mime": "^4.0.6",
     "mkdirp": "^3.0.1",
     "ora": "^8.2.0",
     "picocolors": "^1.1.1",
+    "recursive-copy-all": "^0.0.1",
+    "rimraf": "^6.0.1",
     "zod": "^3.24.2"
   }
 }
