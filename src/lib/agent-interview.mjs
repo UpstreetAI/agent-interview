@@ -11,10 +11,20 @@ import {
   generateCharacterImage,
   generateBackgroundImage,
 } from './generate-image.mjs';
-import { makePromise, uploadBlob } from './util.mjs';
 import {
   featureSpecs,
 } from './agent-features-spec.mjs';
+
+const makePromise = () => {
+  const {
+    promise,
+    resolve,
+    reject,
+  } = Promise.withResolvers();
+  promise.resolve = resolve;
+  promise.reject = reject;
+  return promise;
+};
 
 const processFeatures = (agentJson) => {
   const userSpecifiedFeatures = new Set(Object.keys(agentJson.features || {}));
