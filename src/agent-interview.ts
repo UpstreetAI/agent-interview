@@ -3,44 +3,36 @@ import fs from 'fs';
 
 import { mkdirp } from 'mkdirp';
 import pc from 'picocolors';
-import { Jimp } from 'jimp';
 import ansi from 'ansi-escapes';
 import mime from 'mime/lite';
 import ora from 'ora';
-import { cleanDir } from '../lib/directory-util.mjs';
-import { hasGit, gitInit } from '../lib/git-util.mjs';
+
+import { cleanDir } from './lib/directory-util.mjs';
+import { hasGit, gitInit } from './lib/git-util.mjs';
 import {
   BASE_DIRNAME,
 } from './locations.mjs';
-import {
-  ImageRenderer,
-} from '../packages/upstreet-agent/packages/react-agents/devices/video-input.mjs';
-import { AgentInterview } from '../packages/upstreet-agent/packages/react-agents/util/agent-interview.mjs';
+import { AgentInterview } from './lib/agent-interview.mjs';
 import {
   getAgentAuthSpec,
 } from '../util/agent-auth-util.mjs';
-import {
-  dotenvFormat,
-} from '../util/dotenv-util.mjs';
+import { dotenvFormat } from 'dotenv-formatter';
 import {
   updateAgentJsonAuth,
   ensureAgentJsonDefaults,
 } from '../packages/upstreet-agent/packages/react-agents/util/agent-json-util.mjs';
 import defaultAgentSourceCode from '../packages/upstreet-agent/packages/react-agents/util/agent-default.mjs';
-import { consoleImagePreviewWidth } from '../packages/upstreet-agent/packages/react-agents/constants.mjs';
-import InterviewLogger from '../util/logger/interview-logger.mjs';
-import ReadlineStrategy from '../util/logger/readline.mjs';
-import StreamStrategy from '../util/logger/stream.mjs';
-import { cwd } from '../util/directory-utils.mjs';
-import { recursiveCopyAll } from '../util/copy-utils.mjs';
-import { CharacterCardParser, LorebookParser } from '../util/character-card.mjs';
-import ImagePreviewServer from '../util/image-preview-server.mjs';
-import { imagePreviewPort } from '../util/ports.mjs';
+import InterviewLogger from './lib/logger/interview-logger.mjs';
+import ReadlineStrategy from './lib/logger/readline.mjs';
+import StreamStrategy from './lib/logger/stream.mjs';
+import { recursiveCopyAll } from 'recursive-copy-all';
+import { CharacterCardParser } from 'character-card-parser';
 import { uploadBlob } from '../packages/upstreet-agent/packages/react-agents/util/util.mjs';
 
 //
 
 // const homeDir = os.homedir();
+const cwd = process.cwd();
 
 const logAgentPropertyUpdate = (propertyName, newValue) => {
   // ANSI escape codes for colors
@@ -93,12 +85,6 @@ const interview = async (agentJson, {
       ? new StreamStrategy(inputStream, outputStream)
       : new ReadlineStrategy(),
   );
-  const imagePreviewServer = new ImagePreviewServer(imagePreviewPort);
-
-  // setup SIGINT image preview server close handler
-  process.on('SIGINT', () => {
-    imagePreviewServer.stop();
-  })
   
   const getAnswer = async (question) => {
     // console.log('get answer 1', {
@@ -207,27 +193,7 @@ const interview = async (agentJson, {
       const ab = await blob.arrayBuffer();
       if (signal.aborted) return;
 
-      const b = Buffer.from(ab);
-      
-      // start server if not already running and update image
-      if (!imagePreviewServer.server) {
-          imagePreviewServer.start();
-      }
-      
-      // normalize the label to match the server's expectations
-      const normalizedLabel = label.toLowerCase().replace(/\s+updated \(preview\):$/i, '').trim();
-      imagePreviewServer.updateImage(normalizedLabel, b);
-      
-      const jimp = await Jimp.read(b);
-      if (signal.aborted) return;
-
-      const imageRenderer = new ImageRenderer();
-      const {
-        text: imageText,
-      } = imageRenderer.render(jimp.bitmap, consoleImagePreviewWidth, undefined);
       logAgentPropertyUpdate(label, '');
-      console.log(imageText);
-      console.log(`\nView image at ${imagePreviewServer.getImageUrl(normalizedLabel)}\n`);
     };
     agentInterview.addEventListener('preview', imageLogger('Avatar updated (preview):'));
     agentInterview.addEventListener('homespace', imageLogger('Homespace updated (preview):'));
@@ -238,7 +204,6 @@ const interview = async (agentJson, {
   }
   const result = await agentInterview.waitForFinish();
   questionLogger.close();
-  imagePreviewServer.stop();
   return result;
 };
 const getAgentJsonFromCharacterCard = async (p) => {
