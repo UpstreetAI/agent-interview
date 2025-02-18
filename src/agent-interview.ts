@@ -52,7 +52,7 @@ const propertyLogger = (prefix) => (e) => {
 
 //
 
-const interview = async (agentJson, {
+const cliInterview = async (agentJson, {
   prompt,
   mode,
   inputStream,
@@ -293,7 +293,7 @@ export const create = async (args, opts) => {
     if (interviewMode !== 'auto') {
       console.log(pc.italic('Starting the Interview process...\n'));
     }
-    agentJson = await interview(agentJson, {
+    agentJson = await cliInterview(agentJson, {
       prompt,
       mode: interviewMode,
       inputStream,
@@ -427,7 +427,7 @@ export const edit = async (args, opts) => {
 
   // run the interview, if applicable
   if (!(addFeature || removeFeature)) {
-    agentJson = await interview(agentJson, {
+    agentJson = await cliInterview(agentJson, {
       prompt,
       mode: prompt ? 'auto' : 'edit',
       inputStream,
