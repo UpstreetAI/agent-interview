@@ -1,4 +1,3 @@
-import { defaultQuality } from '../defaults.mjs';
 // import { detect } from './vision.mjs';
 import { aiProxyHost } from './endpoints.mjs';
 // import {
@@ -7,6 +6,8 @@ import { aiProxyHost } from './endpoints.mjs';
 import {
   blobToDataUrl,
 } from './base64.mjs';
+
+const defaultQuality = 0.8;
 
 export const imageSizes = [
   "square_hd",
