@@ -19,6 +19,7 @@
     "build": "tsup ./src/interview.ts --dts --format esm --out-dir ./dist"
   },
   "devDependencies": {
+    "@types/node": "^22.13.4",
     "tsup": "^8.3.6",
     "typescript": "^5.7.3"
   },
