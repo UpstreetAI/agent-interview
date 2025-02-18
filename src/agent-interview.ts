@@ -5,6 +5,7 @@ import pc from 'picocolors';
 import ansi from 'ansi-escapes';
 import mime from 'mime/lite';
 import ora from 'ora';
+import { CharacterCardParser } from 'character-card-parser';
 
 import { AgentInterview } from './lib/agent-interview.mjs';
 import {
@@ -13,7 +14,6 @@ import {
 import InterviewLogger from './lib/logger/interview-logger.mjs';
 import ReadlineStrategy from './lib/logger/readline.mjs';
 import StreamStrategy from './lib/logger/stream.mjs';
-import { CharacterCardParser } from 'character-card-parser';
 
 //
 
