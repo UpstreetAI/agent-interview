@@ -2,8 +2,8 @@
   "name": "agent-interview",
   "description": "Create AI agent configurations using LLMs",
   "version": "0.0.1",
-  "main": "./dist/agent-interview.js",
-  "types": "./dist/agent-interview.d.ts",
+  "main": "./dist/api.js",
+  "types": "./dist/api.d.ts",
   "type": "module",
   "repository": {
     "type": "git",
@@ -16,7 +16,7 @@
   },
   "homepage": "https://github.com/UpstreetAI/agent-interview#readme",
   "scripts": {
-    "build": "tsup ./src/interview.ts --dts --format esm --out-dir ./dist"
+    "build": "tsup ./src/cli.ts ./src/api.ts --dts --format esm --out-dir ./dist"
   },
   "devDependencies": {
     "@types/node": "^22.13.4",
