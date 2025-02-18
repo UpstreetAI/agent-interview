@@ -5,6 +5,24 @@ import {
   base64toBlob,
 } from './base64.mjs';
 
+export const getImageGenerationConfig = () => {
+  let model;
+  let key;
+  if (process.env.FAL_KEY) {
+    model = 'black-forest-labs:flux';
+    key = process.env.FAL_KEY;
+  } else if (process.env.OPENAI_API_KEY) {
+    model = 'openai:dall-e-3';
+    key = process.env.OPENAI_API_KEY;
+  } else {
+    throw new Error('no key');
+  }
+  return {
+    model,
+    key,
+  };
+};
+
 export const imageSizes = [
   "square_hd",
   "square",
@@ -13,7 +31,6 @@ export const imageSizes = [
   "landscape_4_3",
   "landscape_16_9",
 ];
-
 const generateFlux = async ({
   prompt,
   image_size,
@@ -53,20 +70,11 @@ const generateFlux = async ({
   blob.seed = outputSeed + '';
   return blob;
 };
-export const fetchImageGeneration = async (prompt, opts) => {
-  let model;
-  let key;
-  if (process.env.FAL_KEY) {
-    model = 'black-forest-labs:flux';
-    key = process.env.FAL_KEY;
-  } else if (process.env.OPENAI_API_KEY) {
-    model = 'openai:dall-e-3';
-    key = process.env.OPENAI_API_KEY;
-  } else {
-    throw new Error('no key');
-  }
-
+export const fetchImageGeneration = async (opts) => {
   const {
+    model = 'black-forest-labs:flux',
+    key = null,
+    prompt,
     image_size = 'landscape_4_3', // "square_hd", "square", "portrait_4_3", "portrait_16_9", "landscape_4_3", "landscape_16_9"
   } = opts ?? {};
   if (model === 'black-forest-labs:flux') {
@@ -113,13 +121,7 @@ export const fetchImageGeneration = async (prompt, opts) => {
 };
 
 const characterImageSizeFlux = 'portrait_4_3';
-export const generateCharacterImage = async (prompt, opts, {
-  jwt,
-} = {}) => {
-  if (!jwt) {
-    throw new Error('no jwt');
-  }
-
+export const generateCharacterImage = async (prompt, opts) => {
   const {
     stylePrompt = `full body shot, front view, facing viewer, standing straight, arms at side, neutral expression, high resolution, flcl anime style`,
     seed,
@@ -130,12 +132,12 @@ export const generateCharacterImage = async (prompt, opts, {
     stylePrompt,
     prompt,
   ].filter(Boolean).join('\n');
-  const blob = await fetchImageGeneration(fullPrompt, {
+  const blob = await fetchImageGeneration({
+    prompt: fullPrompt,
     image_size: characterImageSizeFlux,
     seed,
     guidance_scale,
-  }, {
-    jwt,
+    ...getImageGenerationConfig(),
   });
 
   return {
@@ -145,13 +147,7 @@ export const generateCharacterImage = async (prompt, opts, {
 };
 
 const backgroundImageSizeFlux = 'square_hd';
-export const generateBackgroundImage = async (prompt, opts, {
-  jwt,
-} = {}) => {
-  if (!jwt) {
-    throw new Error('no jwt');
-  }
-
+export const generateBackgroundImage = async (prompt, opts) => {
   const {
     stylePrompt = `flcl anime style background art`,
     seed,
@@ -162,12 +158,12 @@ export const generateBackgroundImage = async (prompt, opts, {
     stylePrompt,
     prompt,
   ].filter(Boolean).join('\n');
-  const blob = await fetchImageGeneration(fullPrompt, {
+  const blob = await fetchImageGeneration({
+    prompt: fullPrompt,
     image_size: backgroundImageSizeFlux,
     seed,
     guidance_scale,
-  }, {
-    jwt,
+    ...getImageGenerationConfig(),
   });
 
   return {
