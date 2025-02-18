@@ -24,6 +24,7 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
+    "@fal-ai/serverless-client": "^0.13.0",
     "ansi-escapes": "^7.0.0",
     "character-card-parser": "^0.0.1",
     "dedent": "^1.5.3",
