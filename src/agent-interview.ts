@@ -58,11 +58,6 @@ const propertyLogger = (prefix) => (e) => {
 
 //
 
-const writeFile = async (dstPath, s) => {
-  await mkdirp(path.dirname(dstPath));
-  await fs.promises.writeFile(dstPath, s);
-};
-
 const interview = async (agentJson, {
   prompt,
   mode,
