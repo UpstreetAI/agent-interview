@@ -32,6 +32,9 @@ importers:
       picocolors:
         specifier: ^1.1.1
         version: 1.1.1
+      queue-manager-async:
+        specifier: ^0.0.1
+        version: 0.0.1
       recursive-copy-all:
         specifier: ^0.0.1
         version: 0.0.1
@@ -41,6 +44,9 @@ importers:
       zod:
         specifier: ^3.24.2
         version: 3.24.2
+      zod-to-ts:
+        specifier: ^1.2.0
+        version: 1.2.0(typescript@5.7.3)(zod@3.24.2)
     devDependencies:
       '@types/node':
         specifier: ^22.13.4
@@ -732,6 +738,9 @@ packages:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
 
+  queue-manager-async@0.0.1:
+    resolution: {integrity: sha512-vyc19znNJbJSWcomO7VG0G+AbSBgk3wmhBbKKSHC0X12L/ceIDkvyMPcW+sBemkXe6iTHXLIfRbnAuUYRnNStg==}
+
   readdirp@4.1.2:
     resolution: {integrity: sha512-GDhwkLfywWL2s6vEjyhri+eXmfH6j1L7JE27WhqLeYzoh/A3DBaYGEj2H/HFZCn/kMfim73FXxEJTw06WtxQwg==}
     engines: {node: '>= 14.18.0'}
@@ -886,6 +895,12 @@ packages:
 
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
+
+  zod-to-ts@1.2.0:
+    resolution: {integrity: sha512-x30XE43V+InwGpvTySRNz9kB7qFU8DlyEy7BsSTCHPH1R0QasMmHWZDCzYm6bVXtj/9NNJAZF3jW8rzFvH5OFA==}
+    peerDependencies:
+      typescript: ^4.9.4 || ^5.0.2
+      zod: ^3
 
   zod@3.24.2:
     resolution: {integrity: sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ==}
@@ -1406,6 +1421,8 @@ snapshots:
 
   punycode@2.3.1: {}
 
+  queue-manager-async@0.0.1: {}
+
   readdirp@4.1.2: {}
 
   recursive-copy-all@0.0.1:
@@ -1595,5 +1612,10 @@ snapshots:
       strip-ansi: 7.1.0
 
   wrappy@1.0.2: {}
+
+  zod-to-ts@1.2.0(typescript@5.7.3)(zod@3.24.2):
+    dependencies:
+      typescript: 5.7.3
+      zod: 3.24.2
 
   zod@3.24.2: {}

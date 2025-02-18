@@ -32,8 +32,10 @@
     "mkdirp": "^3.0.1",
     "ora": "^8.2.0",
     "picocolors": "^1.1.1",
+    "queue-manager-async": "^0.0.1",
     "recursive-copy-all": "^0.0.1",
     "rimraf": "^6.0.1",
-    "zod": "^3.24.2"
+    "zod": "^3.24.2",
+    "zod-to-ts": "^1.2.0"
   }
 }
