@@ -14,7 +14,6 @@ import InterviewLogger from './lib/logger/interview-logger.mjs';
 import ReadlineStrategy from './lib/logger/readline.mjs';
 import StreamStrategy from './lib/logger/stream.mjs';
 import { CharacterCardParser } from 'character-card-parser';
-import { uploadBlob } from '../packages/upstreet-agent/packages/react-agents/util/util.mjs';
 
 //
 
@@ -217,14 +216,10 @@ const getAgentJsonFromCharacterCard = async (p) => {
     bio: personality,
   };
 };
-const addAgentJsonImage = async (agentJson, p, key, {
-  jwt,
-}) => {
-  const fileBuffer = await fs.promises.readFile(p);
-  const fileBlob = new File([fileBuffer], path.basename(p));
-  const url = await uploadImage(fileBlob, {
-    jwt,
-  });
+const addAgentJsonImage = async (agentJson, p, key) => {
+  const base64 = await fs.promises.readFile(p, 'base64');
+  const mimeType = mime.getType(p) || 'application/octet-stream';
+  const url = `data:${mimeType};base64,${base64}`;
   agentJson = {
     ...agentJson,
     [key]: url,
@@ -248,17 +243,6 @@ const loadAgentJson = (dstDir) => {
   const agentJson = JSON.parse(agentJsonString);
   return agentJson;
 };
-const uploadImage = async (file, {
-  jwt,
-}) => {
-  const type = mime.getType(file.name);
-  const ext = mime.getExtension(type);
-  const guid = crypto.randomUUID();
-  const p = ['images', guid, `image.${ext}`].join('/');
-  return await uploadBlob(p, file, {
-    jwt,
-  });
-};
 
 //
 
@@ -278,13 +262,12 @@ export const create = async (args, opts) => {
   // opts
   const jwt = opts.jwt;
   if (!jwt) {
-    console.error('You must be logged in to create an agent.');
-    return;
+    throw new Error('You must be logged in to create an agent.');
   }
 
   console.log(pc.italic('Generating Agent...'));
   // generate the agent
-  let agentJson = await (async () => {
+  const initialAgentJson = await (async () => {
     if (agentJsonString) {
       return JSON.parse(agentJsonString);
     } else if (inputFile) {
@@ -293,22 +276,19 @@ export const create = async (args, opts) => {
       return null;
     }
   })();
+  let agentJson = initialAgentJson;
   // images
   const previewImageFile = pfpFile || inputFile;
   if (previewImageFile) {
-    agentJson = await addAgentJsonImage(agentJson, previewImageFile, 'previewUrl', {
-      jwt,
-    });
+    agentJson = await addAgentJsonImage(agentJson, previewImageFile, 'previewUrl');
   }
   if (hsFile) {
-    agentJson = await addAgentJsonImage(agentJson, hsFile, 'homespaceUrl', {
-      jwt,
-    });
+    agentJson = await addAgentJsonImage(agentJson, hsFile, 'homespaceUrl');
   }
   // features
   agentJson = addAgentJsonFeatures(agentJson, features);
   // run the interview, if applicable
-  if (!(inputFile || agentJsonString || yes)) {
+  if (!initialAgentJson && !yes) {
     const interviewMode = prompt ? 'auto' : 'interactive';
     if (interviewMode !== 'auto') {
       console.log(pc.italic('Starting the Interview process...\n'));
@@ -433,14 +413,10 @@ export const edit = async (args, opts) => {
   // update images
   const previewImageFile = pfpFile || inputFile;
   if (previewImageFile) {
-    agentJson = await addAgentJsonImage(agentJson, previewImageFile, 'previewUrl', {
-      jwt,
-    });
+    agentJson = await addAgentJsonImage(agentJson, previewImageFile, 'previewUrl');
   }
   if (hsFile) {
-    agentJson = await addAgentJsonImage(agentJson, hsFile, 'homespaceUrl', {
-      jwt,
-    });
+    agentJson = await addAgentJsonImage(agentJson, hsFile, 'homespaceUrl');
   }
 
   // update features
