@@ -23,4 +23,14 @@ export const stringToDataUrl = (str, type = 'text/plain') => {
 export const blobToDataUrl = async (blob) => {
 	const arrayBuffer = await blob.arrayBuffer();
   return arrayBufferToDataUrl(arrayBuffer, blob.type);
-}
+};
+export const base64toBlob = (url, content_type) => {
+  try {
+    const base64Data = url.substring(url.indexOf(',') + 1);
+    const buffer = Buffer.from(base64Data, 'base64');
+    const blob = new Blob([buffer], { type: content_type });
+    return blob;
+  } catch (error) {
+    throw new Error("base64toBlob | error: ", error);
+  }
+};
