@@ -1,7 +1,6 @@
 import path from 'path';
 import fs from 'fs';
 
-import { mkdirp } from 'mkdirp';
 import pc from 'picocolors';
 import ansi from 'ansi-escapes';
 import mime from 'mime/lite';
@@ -9,12 +8,8 @@ import ora from 'ora';
 
 import { AgentInterview } from './lib/agent-interview.mjs';
 import {
-  getAgentAuthSpec,
-} from '../util/agent-auth-util.mjs';
-import {
-  updateAgentJsonAuth,
   ensureAgentJsonDefaults,
-} from '../packages/upstreet-agent/packages/react-agents/util/agent-json-util.mjs';
+} from './lib/agent-json-util.mjs';
 import InterviewLogger from './lib/logger/interview-logger.mjs';
 import ReadlineStrategy from './lib/logger/readline.mjs';
 import StreamStrategy from './lib/logger/stream.mjs';
@@ -195,8 +190,7 @@ const interview = async (agentJson, {
 };
 const getAgentJsonFromCharacterCard = async (p) => {
   const fileBuffer = await fs.promises.readFile(p);
-  const fileBlob = new Blob([fileBuffer]);
-  fileBlob.name = path.basename(p);
+  const fileBlob = new File([fileBuffer], path.basename(p));
 
   const ccp = new CharacterCardParser();
   const parsed = await ccp.parse(fileBlob);
@@ -227,8 +221,7 @@ const addAgentJsonImage = async (agentJson, p, key, {
   jwt,
 }) => {
   const fileBuffer = await fs.promises.readFile(p);
-  const fileBlob = new Blob([fileBuffer]);
-  fileBlob.name = path.basename(p);
+  const fileBlob = new File([fileBuffer], path.basename(p));
   const url = await uploadImage(fileBlob, {
     jwt,
   });
@@ -280,7 +273,6 @@ export const create = async (args, opts) => {
   const pfpFile = args.profilePicture ?? null;
   const hsFile = args.homeSpace ?? null;
   const agentJsonString = args.json;
-  const source = args.source;
   const features = typeof args.feature === 'string' ? JSON.parse(args.feature) : (args.feature || {});
   const yes = args.yes;
   // opts
@@ -288,29 +280,6 @@ export const create = async (args, opts) => {
   if (!jwt) {
     console.error('You must be logged in to create an agent.');
     return;
-  }
-
-  // auth
-  const agentAuthSpec = await getAgentAuthSpec(jwt);
-  const {
-    guid,
-    agentToken,
-    userPrivate,
-    mnemonic,
-  } = agentAuthSpec;
-  if (!agentToken) {
-    throw new Error('Authorization error. Please try logging in again.')
-  }
-  if (!userPrivate) {
-    throw new Error('User not found. Please try logging in again.')
-  }
-  if ((+!!prompt + +!!source) > 1) {
-    throw new Error('multiple mutually exclusive options --prompt and --source');
-  }
-  // ensure agent json string is provided when using source file
-  // since agentJsonString is required for proper agentJson creation
-  if (source && !agentJsonString) {
-    throw new Error('The --json flag is required when using the --source flag.');
   }
 
   console.log(pc.italic('Generating Agent...'));
@@ -339,7 +308,7 @@ export const create = async (args, opts) => {
   // features
   agentJson = addAgentJsonFeatures(agentJson, features);
   // run the interview, if applicable
-  if (!(inputFile || agentJsonString || source || yes)) {
+  if (!(inputFile || agentJsonString || yes)) {
     const interviewMode = prompt ? 'auto' : 'interactive';
     if (interviewMode !== 'auto') {
       console.log(pc.italic('Starting the Interview process...\n'));
@@ -354,7 +323,6 @@ export const create = async (args, opts) => {
     });
   }
  
-  agentJson = updateAgentJsonAuth(agentJson, agentAuthSpec);
   agentJson = ensureAgentJsonDefaults(agentJson);
 
   // update destination directory if no specific path was provided
