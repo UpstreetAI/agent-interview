@@ -1,36 +1,40 @@
-const textEncoder = new TextEncoder();
-
-export const bytesToDataUrl = (bytes, type = 'application/octet-stream') => {
+export const bytesToBase64 = (uint8Array) => {
   // manually build the string instead of using .reduce
   let binaryString = '';
-  for (let i = 0; i < bytes.length; i++) {
-    binaryString += String.fromCharCode(bytes[i]);
+  for (let i = 0; i < uint8Array.length; i++) {
+    binaryString += String.fromCharCode(uint8Array[i]);
   }
 
   // encode the binary string
   const base64String = btoa(binaryString);
-  const s = `data:${type};base64,${base64String}`;
-  return s;
+  return base64String;
 };
-export const arrayBufferToDataUrl = (arrayBuffer, type = 'application/octet-stream') => {
-  const bytes = new Uint8Array(arrayBuffer);
-  return bytesToDataUrl(bytes, type);
+
+export const bytesToDataUrl = (uint8Array, type = 'application/octet-stream') => {
+  const base64String = bytesToBase64(uint8Array);
+  return `data:${type};base64,${base64String}`;
 };
 export const stringToDataUrl = (str, type = 'text/plain') => {
+  const textEncoder = new TextEncoder();
   const bytes = textEncoder.encode(str);
   return bytesToDataUrl(bytes, type);
 };
 export const blobToDataUrl = async (blob) => {
   const arrayBuffer = await blob.arrayBuffer();
-  return arrayBufferToDataUrl(arrayBuffer, blob.type);
+  const uint8Array = new Uint8Array(arrayBuffer);
+  return bytesToDataUrl(uint8Array, blob.type);
 };
-export const base64toBlob = (url, content_type) => {
-  try {
-    const base64Data = url.substring(url.indexOf(',') + 1);
-    const buffer = Buffer.from(base64Data, 'base64');
-    const blob = new Blob([buffer], { type: content_type });
-    return blob;
-  } catch (error) {
-    throw new Error("base64toBlob | error: ", error);
+
+export const base64ToBytes = (base64) => {
+  const binaryString = atob(base64);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
   }
+  return bytes;
+};
+export const base64toBlob = (base64, type) => {
+  const uint8Array = base64ToBytes(base64);
+  const blob = new Blob([uint8Array], { type });
+  return blob;
 };
