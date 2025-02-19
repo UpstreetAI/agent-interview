@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 
+import { program } from 'commander';
 import pc from 'picocolors';
 import ansi from 'ansi-escapes';
 import mime from 'mime/lite';
@@ -447,4 +448,160 @@ export const edit = async (args, opts) => {
     ]);
   };
   await _updateFiles();
+};
+
+const createProgram = () => {
+  try {
+    let commandExecuted = false;
+    program
+      .name('agent-interview')
+      .description('Create AI agent configurations using LLMs')
+      .exitOverride((err) => {
+        if (!commandExecuted) {
+          process.exit(0);
+        }
+      });
+
+    // Generate the JSON string dynamically based on the examples in featureSpecs
+    const featureExamples = featureSpecs.reduce((acc, feature) => {
+      acc[feature.name] = feature.examples;
+      return acc;
+    }, {});
+    const featureExamplesString = Object.entries(featureExamples)
+      .map(([name, examples]) => {
+        const exampleString = examples.map(example => JSON.stringify(example)).join(', ');
+        return `"${name}", example using json ${exampleString}`;
+      })
+      .join('. ');
+    const parseFeatures = (featuresSpec) => {
+      let features = {};
+      for (const featuresString of featuresSpec) {
+        const parsedJson = jsonParse(featuresString);
+        if (parsedJson !== undefined) {
+          features = {
+            ...features,
+            ...parsedJson,
+          };
+        } else {
+          features[featuresString] = featureExamples[featuresString][0];
+        }
+      }
+      return features;
+    };
+
+    program
+      .command('create')
+      .description('Create a new agent, from either a prompt or template')
+      .argument(`[directory]`, `Directory to create the project in`)
+      .option(`-p, --prompt <string>`, `Creation prompt`)
+      .option(`-i, --input <file>`, `Initialize from file (character card)`)
+      .option(`-pfp, --profile-picture <file>`, `Set the profile picture`)
+      .option(`-hs, --home-space <file>`, `Set the home space`)
+      .option(`-j, --json <string>`, `Agent JSON string to initialize with (e.g '{"name": "Ally", "description": "She is cool"}')`)
+      .option(`-y, --yes`, `Non-interactive mode`)
+      .option(`-f, --force`, `Overwrite existing files`)
+      .option(`-n, --no-install`, `Do not install dependencies`)
+      .option(`-F, --force-no-confirm`, `Overwrite existing files without confirming\nUseful for headless environments. ${pc.red('WARNING: Data loss can occur. Use at your own risk.')}`)
+      .option(`-s, --source <string>`, `Main source file for the agent. ${pc.red('REQUIRED: Agent Json string must be provided using -j option')}`)
+      .option(
+        `-feat, --feature <feature...>`,
+        `Provide either a feature name or a JSON string with feature details. Default values are used if specifications are not provided. Supported features: ${pc.green(featureExamplesString)}`
+      )
+      .action(async (directory = undefined, opts = {}) => {
+        logUpstreetBanner();
+        console.log(`
+
+  Welcome to USDK's Agent Creation process.
+
+  ${pc.cyan(`v${packageJson.version}`)}
+
+  To exit, press CTRL+C twice.
+  If you're customizing the code for this Agent, you may need to reload this chat every time you save.
+
+  ${pc.italic('For more information on the Agent creation process, head over to https://docs.upstreet.ai/create-an-agent#step-2-complete-the-agent-interview')}
+  
+`);
+        await handleError(async () => {
+          commandExecuted = true;
+          let args;
+          if (typeof directory === 'string') {
+            args = {
+              _: [directory],
+              ...opts,
+            };
+          } else {
+            args = {
+              _: [],
+              ...opts,
+            };
+          }
+
+          // if features flag used, check if the feature is a valid JSON string, if so parse accordingly, else use default values
+          if (opts.feature) {
+            args.feature = parseFeatures(opts.feature);
+          }
+
+          const jwt = await getLoginJwt();
+
+          await create(args, {
+            jwt,
+          });
+        });
+      });
+    program
+      .command('edit')
+      .description('Edit an existing agent')
+      .argument(`[directory]`, `Directory containing the agent to edit`)
+      .option(`-p, --prompt <string>`, `Edit prompt`)
+      .option(`-i, --input <file>`, `Update from file (character card)`)
+      .option(`-pfp, --profile-picture <file>`, `Set the profile picture`)
+      .option(`-hs, --home-space <file>`, `Set the home space`)
+      .option(
+        `-af, --add-feature <feature...>`,
+        `Add a feature`,
+      )
+      .option(
+        `-rf, --remove-feature <feature...>`,
+        `Remove a feature`,
+      )
+      .action(async (directory = undefined, opts = {}) => {
+        await handleError(async () => {
+          commandExecuted = true;
+          let args;
+          if (typeof directory === 'string') {
+            args = {
+              _: [directory],
+              ...opts,
+            };
+          } else {
+            args = {
+              _: [],
+              ...opts,
+            };
+          }
+
+          if (opts.addFeature) {
+            args.addFeature = parseFeatures(opts.addFeature);
+          }
+
+          const jwt = await getLoginJwt();
+
+          await edit(args, {
+            jwt,
+          });
+        });
+      });
+  } catch (error) {
+    console.error("Error creating program:", error);
+  }
+  return program // always return the program
+};
+
+export const main = async () => {
+  createProgram();
+  try {
+    await program.parseAsync();
+  } catch (error) {
+    console.error("Error running program:", error);
+  }
 };
