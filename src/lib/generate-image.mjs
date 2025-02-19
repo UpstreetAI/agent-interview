@@ -3,7 +3,7 @@ import * as fal from "@fal-ai/serverless-client";
 import {
   // blobToDataUrl,
   base64toBlob,
-} from './base64.mjs';
+} from 'base64-universal';
 
 export const getImageGenerationConfig = () => {
   let model;
