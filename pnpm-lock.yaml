@@ -14,6 +14,9 @@ importers:
       ansi-escapes:
         specifier: ^7.0.0
         version: 7.0.0
+      base64-universal:
+        specifier: ^0.0.1
+        version: 0.0.1
       character-card-parser:
         specifier: ^0.0.1
         version: 0.0.1
@@ -416,6 +419,9 @@ packages:
 
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
+
+  base64-universal@0.0.1:
+    resolution: {integrity: sha512-esmuVQ62YQNPWTLBjlXP1ui/+9eqXzU0sAJNXPWPzUgQjXhjdztTVcdADUFUe6WBJIQafrFUTljx77NrZraZng==}
 
   brace-expansion@1.1.11:
     resolution: {integrity: sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==}
@@ -1305,6 +1311,8 @@ snapshots:
   asynckit@0.4.0: {}
 
   balanced-match@1.0.2: {}
+
+  base64-universal@0.0.1: {}
 
   brace-expansion@1.1.11:
     dependencies:

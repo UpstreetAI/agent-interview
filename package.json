@@ -26,6 +26,7 @@
   "dependencies": {
     "@fal-ai/serverless-client": "^0.13.0",
     "ansi-escapes": "^7.0.0",
+    "base64-universal": "^0.0.1",
     "character-card-parser": "^0.0.1",
     "dedent": "^1.5.3",
     "dotenv-formatter": "^0.0.1",
