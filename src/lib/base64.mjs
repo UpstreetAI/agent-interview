@@ -21,7 +21,7 @@ export const stringToDataUrl = (str, type = 'text/plain') => {
   return bytesToDataUrl(bytes, type);
 };
 export const blobToDataUrl = async (blob) => {
-	const arrayBuffer = await blob.arrayBuffer();
+  const arrayBuffer = await blob.arrayBuffer();
   return arrayBufferToDataUrl(arrayBuffer, blob.type);
 };
 export const base64toBlob = (url, content_type) => {
