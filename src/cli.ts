@@ -334,7 +334,8 @@ export const create = async (args, opts) => {
     },
   }));
 
-  console.log('\nCreated agent at', ansi.link(path.resolve(dstDir)));
+  const resolvedDstDir = path.resolve(dstDir);
+  console.log('\nCreated agent at', ansi.link(resolvedDstDir, resolvedDstDir));
   console.log();
   console.log(pc.green('To start a chat with your agent, run:'));
   console.log(pc.cyan(`  usdk chat ${dstDir}`));
