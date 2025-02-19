@@ -2,9 +2,10 @@ import { z } from 'zod';
 import dedent from 'dedent';
 import { QueueManager } from 'queue-manager-async';
 import { defaultModels } from '../constants.mjs';
-import { fetchJsonCompletion } from '../packages/upstreet-agent/packages/react-agents/util/fetch.mjs';
-
-//
+import {
+  getTextGenerationConfig,
+  fetchJsonCompletion,
+} from './generate-text.mjs';
 
 const makeCleanObjectFromSchema = (object, schema) => {
   if (schema && typeof schema === 'object' && schema._def && schema._def.typeName === 'ZodObject') {
@@ -119,6 +120,7 @@ export class Interactor extends EventTarget {
         const o = await fetchJsonCompletion({
           model: defaultModels[0],
           messages,
+          ...getTextGenerationConfig(),
         }, z.object({
           response: z.string(),
           updateObject: z.union([
@@ -172,6 +174,7 @@ export class Interactor extends EventTarget {
         let o = await fetchJsonCompletion({
           model: defaultModels[0],
           messages,
+          ...getTextGenerationConfig(),
         }, z.object({
           output: objectFormat,
         }), {
