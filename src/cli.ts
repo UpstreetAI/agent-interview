@@ -60,7 +60,6 @@ const cliInterview = async (agentJson, {
   events,
   jwt,
 }) => {
-
   const questionLogger = new InterviewLogger(
     inputStream && outputStream
       ? new StreamStrategy(inputStream, outputStream)
