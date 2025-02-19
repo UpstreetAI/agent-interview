@@ -87,14 +87,14 @@ const cliInterview = async (agentJson, {
   const spinner = ora({
     text: '',
     spinner: {
-        interval: 80,
-        frames: [
-            '●∙∙∙',
-            '∙●∙∙',
-            '∙∙●∙',
-            '∙∙∙●',
-            '∙∙∙∙'
-        ]
+      interval: 80,
+      frames: [
+        '●∙∙∙',
+        '∙●∙∙',
+        '∙∙●∙',
+        '∙∙∙●',
+        '∙∙∙∙',
+      ],
     },
     discardStdin: false,
   }).stop(); // initialize as stopped
