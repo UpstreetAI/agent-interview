@@ -1,8 +1,7 @@
 // import { aiProxyHost } from './endpoints.mjs';
 import * as fal from "@fal-ai/serverless-client";
 import {
-  // blobToDataUrl,
-  base64toBlob,
+  dataUrlToBlob,
 } from 'base64-universal';
 
 export const getImageGenerationConfig = () => {
@@ -66,7 +65,7 @@ const generateFlux = async ({
   const { images, timings, seed: outputSeed, has_nsfw_concepts } = result;
   const image = images[0];
   const { url, content_type } = image;
-  const blob = base64toBlob(url, content_type);
+  const blob = await dataUrlToBlob(url, content_type);
   blob.seed = outputSeed + '';
   return blob;
 };
