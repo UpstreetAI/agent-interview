@@ -55,12 +55,12 @@ const generateFlux = async ({
       sync_mode,
       enable_safety_checker,
     },
-    logs: true,
-    onQueueUpdate: (update) => {
-      if (update.status === 'IN_PROGRESS') {
-        update.logs.map((log) => log.message).forEach(console.log);
-      }
-    },
+    // logs: true,
+    // onQueueUpdate: (update) => {
+    //   if (update.status === 'IN_PROGRESS') {
+    //     update.logs.map((log) => log.message).forEach(console.log);
+    //   }
+    // },
   });
   const { images, timings, seed: outputSeed, has_nsfw_concepts } = result;
   const image = images[0];
