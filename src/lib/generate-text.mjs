@@ -18,6 +18,16 @@ export const fetchJsonCompletion = async (opts, format) => {
 
   const response_format = format && zodResponseFormat(format, 'result');
 
+  let modelType = 'openai';
+  let modelName = model;
+  const match = model.match(/^([^:]+):([^:]+)/);
+  if (match) {
+    modelType = match[1];
+    modelName = match[2];
+  } else {
+    throw new Error('invalid model: ' + model);
+  }
+
   const u = `https://api.openai.com/v1/chat/completions`;
   const res = await fetch(u, {
     method: 'POST',
@@ -26,7 +36,7 @@ export const fetchJsonCompletion = async (opts, format) => {
       'Authorization': `Bearer ${key}`,
     },
     body: JSON.stringify({
-      model,
+      model: modelName,
       messages,
       response_format,
       stream,
