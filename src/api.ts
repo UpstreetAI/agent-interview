@@ -3,6 +3,7 @@ import {
   runInterview,
 } from './cli.ts';
 import {
+  type AgentConfig,
   type AbstractRegistry,
 } from './registries/registry.ts';
 // import {
@@ -18,6 +19,7 @@ export const createAgent = async ({
   prompt,
   inputStream,
   outputStream,
+  errorStream,
   events,
   input,
   profilePicture,
@@ -30,6 +32,7 @@ export const createAgent = async ({
   prompt?: string;
   inputStream?: Readable;
   outputStream?: Writable;
+  errorStream?: Writable;
   events?: EventTarget;
   input?: string;
   profilePicture?: string;
@@ -42,12 +45,13 @@ export const createAgent = async ({
   // load the plugins
   // const plugins = await registry.getAllPlugins();
 
-  let agentJson = json;
+  let agentJson: AgentConfig = json;
   agentJson = await runInterview(agentJson, {
     prompt,
     mode: 'auto',
     inputStream,
     outputStream,
+    errorStream,
     events,
     registry,
   });

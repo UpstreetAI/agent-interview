@@ -63,6 +63,7 @@ export const runInterview = async (agentJson, {
   mode,
   inputStream,
   outputStream,
+  errorStream,
   events,
   registry,
 } : {
@@ -70,6 +71,7 @@ export const runInterview = async (agentJson, {
   mode?: string;
   inputStream?: Readable;
   outputStream?: Writable;
+  errorStream?: Writable;
   events?: EventTarget;
   registry?: AbstractRegistry;
 }): Promise<AgentConfig> => {
@@ -98,7 +100,6 @@ export const runInterview = async (agentJson, {
     featureSpecs,
   };
 
-  // XXX pipe this to the error stream
   const spinner = ora({
     text: '',
     spinner: {
@@ -112,6 +113,8 @@ export const runInterview = async (agentJson, {
       ],
     },
     discardStdin: false,
+    isEnabled: !!errorStream,
+    stream: errorStream,
   }).stop(); // initialize as stopped
 
   let currentSpinnerState = false;
