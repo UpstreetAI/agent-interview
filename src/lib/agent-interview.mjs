@@ -14,9 +14,9 @@ import {
   generateCharacterImage,
   generateBackgroundImage,
 } from './generate-image.mjs';
-import {
-  featureSpecs,
-} from './agent-features-spec.mjs';
+// import {
+//   featureSpecs,
+// } from './agent-features-spec.mjs';
 
 const makePromise = () => {
   const {
@@ -29,14 +29,14 @@ const makePromise = () => {
   return promise;
 };
 
-const processFeatures = (agentJson) => {
+const processFeatures = (agentJson, featureSpecs) => {
   const userSpecifiedFeatures = new Set(Object.keys(agentJson.features || {}));
   const validFeatures = new Set(featureSpecs.map(spec => spec.name));
 
   // Check for invalid user-specified features and throw an error if any are found
   for (const feature of userSpecifiedFeatures) {
     if (!validFeatures.has(feature)) {
-      throw new Error(`Invalid features specified: ${feature}`);
+      throw new Error(`Invalid feature specified: ${feature}`);
     }
   }
 
@@ -95,9 +95,10 @@ export class AgentInterview extends EventTarget {
       agentJson, // object
       prompt, // string
       mode, // 'auto' | 'interactive' | 'manual'
+      featureSpecs,
     } = opts;
 
-    const { result: featureSchemas, userSpecifiedFeatures, allowAll } = processFeatures(agentJson);
+    const { result: featureSchemas, userSpecifiedFeatures, allowAll } = processFeatures(agentJson, featureSpecs);
 
     // generate the features available prompt
     const featuresAvailablePrompt = generateFeaturePrompt(featureSpecs, userSpecifiedFeatures, allowAll);

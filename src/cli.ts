@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs';
+import { Readable, Writable } from 'stream';
 
 import { program } from 'commander';
 import pc from 'picocolors';
@@ -7,6 +8,9 @@ import ansi from 'ansi-escapes';
 import mime from 'mime/lite';
 import ora from 'ora';
 import { CharacterCardParser } from 'character-card-parser';
+import {
+  type AbstractRegistry,
+} from './registries/registry.ts';
 
 import { AgentInterview } from './lib/agent-interview.mjs';
 import {
@@ -59,7 +63,14 @@ export const runInterview = async (agentJson, {
   inputStream,
   outputStream,
   events,
-  plugins, // XXX use this
+  registry,
+} : {
+  prompt?: string;
+  mode?: string;
+  inputStream?: Readable;
+  outputStream?: Writable;
+  events?: EventTarget;
+  registry?: AbstractRegistry;
 }) => {
   const questionLogger = new InterviewLogger(
     inputStream && outputStream
@@ -78,10 +89,12 @@ export const runInterview = async (agentJson, {
     // });
     return answer;
   };
+  const featureSpecs = await registry.getAllPlugins();
   const opts = {
     agentJson,
     prompt,
     mode,
+    featureSpecs,
   };
 
   const spinner = ora({
