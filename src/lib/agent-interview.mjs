@@ -280,11 +280,14 @@ export class AgentInterview extends EventTarget {
           if (typeof result === 'string') {
             return result;
           } else if (result instanceof Blob) {
-            const guid = crypto.randomUUID();
-            const p = ['avatars', guid, `image.jpg`].join('/');
-            return await uploadBlob(p, result, {
-              jwt,
-            });
+            const dataUrl = await blobToDataUrl(result);
+            return dataUrl;
+            // const guid = crypto.randomUUID();
+            // const p = ['avatars', guid, `image.jpg`].join('/');
+            // throw new Error('not implemented');
+            // return await uploadBlob(p, result, {
+            //   jwt,
+            // });
           } else if (result === null) {
             return '';
           } else {
