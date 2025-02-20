@@ -16,11 +16,11 @@ import {
 //
 
 const test = async () => {
-  {
-    const registry = new ElizaosRegistry();
-    const plugins = await registry.getAllPlugins();
-    console.log('elizaos plugins', plugins);
-  }
+  // {
+  //   const registry = new ElizaosRegistry();
+  //   const plugins = await registry.getAllPlugins();
+  //   console.log('elizaos plugins', JSON.stringify(plugins, null, 2));
+  // }
 
   const events = new EventTarget();
   const inputStream = new PassThrough();
