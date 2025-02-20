@@ -21,8 +21,8 @@ const test = async () => {
   inputStream.end();
   const outputStream = new PassThrough();
   outputStream.pipe(process.stdout);
-  const errorStream = new PassThrough();
-  errorStream.pipe(process.stderr);
+  // const errorStream = new PassThrough();
+  // errorStream.pipe(process.stderr);
 
   const registry = new ReactAgentsRegistry();
   const agent = await createAgent({
@@ -30,7 +30,7 @@ const test = async () => {
     events,
     inputStream,
     outputStream,
-    errorStream,
+    // errorStream,
     registry,
     format: 'react-agents',
   });

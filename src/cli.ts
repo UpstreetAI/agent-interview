@@ -114,7 +114,7 @@ export const runInterview = async (agentJson, {
     },
     discardStdin: false,
     isEnabled: !!errorStream,
-    stream: errorStream,
+    stream: errorStream ?? process.stderr,
   }).stop(); // initialize as stopped
 
   let currentSpinnerState = false;
