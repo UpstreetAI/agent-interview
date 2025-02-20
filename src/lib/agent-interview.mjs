@@ -1,5 +1,8 @@
 import dedent from 'dedent';
 import { z } from 'zod';
+import {
+  blobToDataUrl,
+} from 'base64-universal';
 
 import {
   Interactor,
@@ -92,7 +95,6 @@ export class AgentInterview extends EventTarget {
       agentJson, // object
       prompt, // string
       mode, // 'auto' | 'interactive' | 'manual'
-      jwt,
     } = opts;
 
     const { result: featureSchemas, userSpecifiedFeatures, allowAll } = processFeatures(agentJson);
@@ -106,9 +108,7 @@ export class AgentInterview extends EventTarget {
     }) => {
       const {
         blob,
-      } = await generateCharacterImage(visualDescription, undefined, {
-        jwt,
-      });
+      } = await generateCharacterImage(visualDescription, undefined);
       return blob;
     });
     visualDescriptionValueUpdater.addEventListener('change', async (e) => {
@@ -123,9 +123,7 @@ export class AgentInterview extends EventTarget {
     }) => {
       const {
         blob,
-      } = await generateBackgroundImage(homespaceDescription, undefined , {
-        jwt,
-      });
+      } = await generateBackgroundImage(homespaceDescription, undefined);
       return blob;
     });
     homespaceDescriptionValueUpdater.addEventListener('change', async (e) => {
@@ -205,7 +203,6 @@ export class AgentInterview extends EventTarget {
         }
         return updateObject;
       },
-      jwt,
     });
     this.interactor.addEventListener('processingStateChange', (event) => {
       this.dispatchEvent(new MessageEvent('processingStateChange', {

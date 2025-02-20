@@ -53,13 +53,13 @@ const propertyLogger = (prefix) => (e) => {
 
 //
 
-const cliInterview = async (agentJson, {
+export const runInterview = async (agentJson, {
   prompt,
   mode,
   inputStream,
   outputStream,
   events,
-  jwt,
+  plugins, // XXX use this
 }) => {
   const questionLogger = new InterviewLogger(
     inputStream && outputStream
@@ -82,7 +82,6 @@ const cliInterview = async (agentJson, {
     agentJson,
     prompt,
     mode,
-    jwt,
   };
 
   const spinner = ora({
@@ -293,13 +292,12 @@ export const create = async (args, opts) => {
     if (interviewMode !== 'auto') {
       console.log(pc.italic('Starting the Interview process...\n'));
     }
-    agentJson = await cliInterview(agentJson, {
+    agentJson = await runInterview(agentJson, {
       prompt,
       mode: interviewMode,
       inputStream,
       outputStream,
       events,
-      jwt,
     });
   }
  
@@ -428,13 +426,12 @@ export const edit = async (args, opts) => {
 
   // run the interview, if applicable
   if (!(addFeature || removeFeature)) {
-    agentJson = await cliInterview(agentJson, {
+    agentJson = await runInterview(agentJson, {
       prompt,
       mode: prompt ? 'auto' : 'edit',
       inputStream,
       outputStream,
       events,
-      jwt,
     });
   }
 
