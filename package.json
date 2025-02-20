@@ -30,10 +30,11 @@
   "dependencies": {
     "@fal-ai/serverless-client": "^0.13.0",
     "ansi-escapes": "^7.0.0",
-    "base64-universal": "^0.0.1",
+    "base64-universal": "^0.0.2",
     "character-card-parser": "^0.0.1",
     "commander": "^13.1.0",
     "dedent": "^1.5.3",
+    "dotenv": "^16.4.7",
     "dotenv-formatter": "^0.0.1",
     "mime": "^4.0.6",
     "mkdirp": "^3.0.1",

@@ -15,8 +15,8 @@ importers:
         specifier: ^7.0.0
         version: 7.0.0
       base64-universal:
-        specifier: ^0.0.1
-        version: 0.0.1
+        specifier: ^0.0.2
+        version: 0.0.2
       character-card-parser:
         specifier: ^0.0.1
         version: 0.0.1
@@ -26,6 +26,9 @@ importers:
       dedent:
         specifier: ^1.5.3
         version: 1.5.3
+      dotenv:
+        specifier: ^16.4.7
+        version: 16.4.7
       dotenv-formatter:
         specifier: ^0.0.1
         version: 0.0.1
@@ -423,8 +426,8 @@ packages:
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
 
-  base64-universal@0.0.1:
-    resolution: {integrity: sha512-esmuVQ62YQNPWTLBjlXP1ui/+9eqXzU0sAJNXPWPzUgQjXhjdztTVcdADUFUe6WBJIQafrFUTljx77NrZraZng==}
+  base64-universal@0.0.2:
+    resolution: {integrity: sha512-hyzLdWr+jOvX2T5hUwVJUaEZONwrL+Acko+Pn9spSdBn/3iS3CbifCm4Z5YdyitL01SPhKM0PRWV+gLCySiDgQ==}
 
   brace-expansion@1.1.11:
     resolution: {integrity: sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==}
@@ -525,6 +528,10 @@ packages:
 
   dotenv-formatter@0.0.1:
     resolution: {integrity: sha512-TPE7O8XrbMcJMz18daw6FpftN4tHUpVQv6fGh0RR4S2L9jLwosYABqKdQMnNKHXF4s1Hgtl9fMOKBqd7Xwnh6A==}
+
+  dotenv@16.4.7:
+    resolution: {integrity: sha512-47qPchRCykZC03FhkYAhrvwU4xDBFIj1QPqaarj6mdM/hgUzfPHcpkHJOn3mJAufFeeAxAzeGsr5X0M4k6fLZQ==}
+    engines: {node: '>=12'}
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -1319,7 +1326,7 @@ snapshots:
 
   balanced-match@1.0.2: {}
 
-  base64-universal@0.0.1: {}
+  base64-universal@0.0.2: {}
 
   brace-expansion@1.1.11:
     dependencies:
@@ -1401,6 +1408,8 @@ snapshots:
   delayed-stream@1.0.0: {}
 
   dotenv-formatter@0.0.1: {}
+
+  dotenv@16.4.7: {}
 
   dunder-proto@1.0.1:
     dependencies:
