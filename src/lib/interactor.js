@@ -37,7 +37,6 @@ const makeEmptyObjectFromSchema = (schema) => {
 //
 
 export class Interactor extends EventTarget {
-  jwt;
   object;
   objectFormat;
   formatFn;
@@ -51,11 +50,9 @@ export class Interactor extends EventTarget {
     object,
     objectFormat,
     formatFn = o => o,
-    jwt,
   }) {
     super();
 
-    this.jwt = jwt;
     this.object = object ?
       makeCleanObjectFromSchema(object, objectFormat)
     :
@@ -109,7 +106,7 @@ export class Interactor extends EventTarget {
     return await this.queueManager.waitForTurn(async () => {
       try {
         this.#setProcessingState(true);
-        const { jwt, objectFormat, object, messages } = this;
+        const { objectFormat, object, messages } = this;
 
         if (text) {
           messages.push({
@@ -128,9 +125,7 @@ export class Interactor extends EventTarget {
             z.null(),
           ]),
           done: z.boolean(),
-        }), {
-          jwt,
-        });
+        }));
         const updateObject = this.formatFn(o.updateObject);
         if (updateObject) {
           for (const key in updateObject) {
@@ -177,9 +172,7 @@ export class Interactor extends EventTarget {
           ...getTextGenerationConfig(),
         }, z.object({
           output: objectFormat,
-        }), {
-          jwt,
-        });
+        }));
 
         o = {
           response: '',
