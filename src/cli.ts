@@ -98,6 +98,7 @@ export const runInterview = async (agentJson, {
     featureSpecs,
   };
 
+  // XXX pipe this to the error stream
   const spinner = ora({
     text: '',
     spinner: {
