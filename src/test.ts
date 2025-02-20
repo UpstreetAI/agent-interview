@@ -9,24 +9,20 @@ import {
 import {
   ReactAgentsRegistry,
 } from './registries/react-agents/react-agents-registry.ts';
-import {
-  ElizaosRegistry,
-} from './registries/elizaos/elizaos-registry.ts';
+// import {
+//   ElizaosRegistry,
+// } from './registries/elizaos/elizaos-registry.ts';
 
 //
 
 const test = async () => {
-  // {
-  //   const registry = new ElizaosRegistry();
-  //   const plugins = await registry.getAllPlugins();
-  //   console.log('elizaos plugins', JSON.stringify(plugins, null, 2));
-  // }
-
   const events = new EventTarget();
   const inputStream = new PassThrough();
   inputStream.end();
   const outputStream = new PassThrough();
   outputStream.pipe(process.stdout);
+  const errorStream = new PassThrough();
+  errorStream.pipe(process.stderr);
 
   const registry = new ReactAgentsRegistry();
   const agent = await createAgent({
@@ -34,6 +30,7 @@ const test = async () => {
     events,
     inputStream,
     outputStream,
+    errorStream,
     registry,
     format: 'react-agents',
   });
