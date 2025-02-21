@@ -17,9 +17,9 @@ export class ElizaosRegistry extends AbstractRegistry {
       // officialOnly: officialOnly.toString()
       search,
       officialOnly: 'true',
+      allRepos: 'true',
     });
   
-    // XXX this needs to be paginated
     const res = await fetch(`${eosRegistryBaseUrl}/plugins?${params.toString()}`);
     if (res.ok) {
       const data = await res.json();

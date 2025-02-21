@@ -89,7 +89,7 @@ export class AgentInterview extends EventTarget {
   constructor(opts: {
     agentJson: AbstractAgent;
     prompt: string;
-    mode: 'auto' | 'interactive' | 'manual';
+    mode: 'auto' | 'interactive' | 'manual' | 'edit';
     featureSpecs: PluginConfigExt[];
   }) {
     super();
@@ -114,7 +114,7 @@ export class AgentInterview extends EventTarget {
       return blob;
     });
     visualDescriptionValueUpdater.addEventListener('change', async (e) => {
-      this.dispatchEvent(new MessageEvent('preview', {
+      this.dispatchEvent(new MessageEvent('avatar', {
         data: e.data,
       }));
     });
@@ -151,8 +151,8 @@ export class AgentInterview extends EventTarget {
     this.loadPromise = makePromise<AbstractAgent>();
 
     // initialize
-    if (agentJson.previewUrl) {
-      visualDescriptionValueUpdater.setResult(agentJson.previewUrl);
+    if (agentJson.avatarUrl) {
+      visualDescriptionValueUpdater.setResult(agentJson.avatarUrl);
     }
     if (agentJson.homespaceUrl) {
       homespaceDescriptionValueUpdater.setResult(agentJson.homespaceUrl);
@@ -301,7 +301,7 @@ export class AgentInterview extends EventTarget {
 
         // return result
         [
-          agentJson.previewUrl,
+          agentJson.avatarUrl,
           agentJson.homespaceUrl,
         ] = await Promise.all([
           getPreviewUrl(visualDescriptionValueUpdater),

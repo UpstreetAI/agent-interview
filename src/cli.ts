@@ -169,7 +169,7 @@ export const runInterview = async (agentJson, {
   });
   
   if (events) {
-    ['preview', 'homespace'].forEach(eventType => {
+    ['avatar', 'homespace'].forEach(eventType => {
       agentInterview.addEventListener(eventType, (e) => {
         events.dispatchEvent(new MessageEvent(eventType, {
           data: e.data,
@@ -188,7 +188,7 @@ export const runInterview = async (agentJson, {
 
       logAgentPropertyUpdate(label, '');
     };
-    agentInterview.addEventListener('preview', imageLogger('Avatar updated (preview):'));
+    agentInterview.addEventListener('avatar', imageLogger('Avatar updated (preview):'));
     agentInterview.addEventListener('homespace', imageLogger('Homespace updated (preview):'));
     agentInterview.addEventListener('name', propertyLogger('name'));
     agentInterview.addEventListener('bio', propertyLogger('bio'));
@@ -290,9 +290,8 @@ export const create = async (args, opts) => {
   })();
   let agentJson = initialAgentJson;
   // images
-  const previewImageFile = pfpFile || inputFile;
-  if (previewImageFile) {
-    agentJson = await addAgentJsonImage(agentJson, previewImageFile, 'previewUrl');
+  if (pfpFile) {
+    agentJson = await addAgentJsonImage(agentJson, pfpFile, 'avatarUrl');
   }
   if (hsFile) {
     agentJson = await addAgentJsonImage(agentJson, hsFile, 'homespaceUrl');
@@ -330,7 +329,7 @@ export const create = async (args, opts) => {
   console.log(pc.green('Bio:'), agentJson.bio);
   console.log(pc.green('Description:'), agentJson.description);
   console.log(pc.green('Visual Description:'), agentJson.visualDescription);
-  console.log(pc.green('Preview URL:'), agentJson.previewUrl);
+  console.log(pc.green('Avatar URL:'), agentJson.avatarUrl);
   console.log(pc.green('Homespace Description:'), agentJson.homespaceDescription);
   console.log(pc.green('Homespace URL:'), agentJson.homespaceUrl);
   const featuresKeys = Object.keys(agentJson.features ?? {});
@@ -423,9 +422,8 @@ export const edit = async (args, opts) => {
   };
 
   // update images
-  const previewImageFile = pfpFile || inputFile;
-  if (previewImageFile) {
-    agentJson = await addAgentJsonImage(agentJson, previewImageFile, 'previewUrl');
+  if (pfpFile) {
+    agentJson = await addAgentJsonImage(agentJson, pfpFile, 'avatarUrl');
   }
   if (hsFile) {
     agentJson = await addAgentJsonImage(agentJson, hsFile, 'homespaceUrl');

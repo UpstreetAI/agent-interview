@@ -44,7 +44,7 @@ const testRegistry = async ({
   });
   console.log(JSON.stringify({
     ...agent,
-    previewUrl: agent.previewUrl?.slice(0, 100) + '...',
+    avatarUrl: agent.avatarUrl?.slice(0, 100) + '...',
     homespaceUrl: agent.homespaceUrl?.slice(0, 100) + '...',
   }, null, 2));
 };

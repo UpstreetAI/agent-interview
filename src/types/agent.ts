@@ -20,7 +20,6 @@ export type AgentJson = {
   model: string;
   smallModel: string;
   largeModel: string;
-  previewUrl: string;
   avatarUrl: string;
   homespaceUrl: string;
   voiceEndpoint: string;
