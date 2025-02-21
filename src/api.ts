@@ -45,9 +45,6 @@ export const createAgent = async ({
   features?: string[];
   format?: string;
 }) => {
-  // load the plugins
-  // const plugins = await registry.getAllPlugins();
-
   let agentJson = createAbstractAgent();
   agentJson = await runInterview(agentJson, {
     prompt,
