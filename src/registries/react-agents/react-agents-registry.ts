@@ -89,13 +89,14 @@ export const featureSpecs = [
         voiceEndpoint: {
           type: 'string',
           enum: defaultVoices.map(v => v.voiceEndpoint),
-          default: defaultVoices[0].voiceEndpoint,
+          // default: defaultVoices[0].voiceEndpoint,
           examples: [defaultVoices[0].voiceEndpoint]
         }
       },
       required: ['voiceEndpoint']
     },
     examples: [{ voiceEndpoint: defaultVoices[0].voiceEndpoint },],
+
     // For Web UI
     displayIcon: 'Voice',
     displayName: 'Voice',
@@ -128,17 +129,17 @@ export const featureSpecs = [
       properties: {
         maxUserMessages: { 
           type: 'number',
-          default: 5,
+          // default: 5,
           examples: [5]
         },
         maxUserMessagesTime: { 
           type: 'number',
-          default: 60000,
+          // default: 60000,
           examples: [60000]
         },
         message: { 
           type: 'string',
-          default: "Whoa there! Take a moment.",
+          // default: "Whoa there! Take a moment.",
           examples: ["Whoa there! Take a moment."]
         }
       }
@@ -192,13 +193,13 @@ export const featureSpecs = [
       properties: {
         token: { 
           type: 'string',
-          default: '',
+          // default: '',
           examples: ['YOUR_DISCORD_BOT_TOKEN']
         },
         channels: {
           type: 'array',
           items: { type: 'string' },
-          default: ['general', 'voice'],
+          // default: ['general', 'voice'],
           examples: [['general', 'voice']]
         }
       },
@@ -244,7 +245,7 @@ export const featureSpecs = [
       properties: {
         token: { 
           type: 'string',
-          default: '',
+          // default: '',
           examples: ['YOUR_TWITTER_BOT_TOKEN']
         }
       },
@@ -281,22 +282,22 @@ export const featureSpecs = [
       properties: {
         apiKey: { 
           type: 'string',
-          default: '',
+          // default: '',
           examples: ['YOUR_TELNYX_API_KEY']
         },
         phoneNumber: { 
           type: 'string',
-          default: '',
+          // default: '',
           examples: ['+14151234567']
         },
         message: { 
           type: 'boolean',
-          default: false,
+          // default: false,
           examples: [true]
         },
         voice: { 
           type: 'boolean',
-          default: false,
+          // default: false,
           examples: [true]
         }
       },
@@ -354,7 +355,7 @@ export const featureSpecs = [
           type: {
             type: 'string',
             enum: ['payment', 'subscription'],
-            default: 'payment',
+            // default: 'payment',
             examples: ['payment']
           },
           props: {
@@ -362,34 +363,34 @@ export const featureSpecs = [
             properties: {
               name: { 
                 type: 'string',
-                default: '',
+                // default: '',
                 examples: ['Art']
               },
               description: { 
                 type: 'string',
-                default: '',
+                // default: '',
                 examples: ['An art piece']
               },
               amount: { 
                 type: 'integer',
-                default: 100,
+                // default: 100,
                 examples: [499]
               },
               currency: { 
                 type: 'string', 
                 enum: currencies,
-                default: currencies[0],
+                // default: currencies[0],
                 examples: ['usd']
               },
               interval: { 
                 type: 'string', 
                 enum: intervals,
-                default: intervals[0],
+                // default: intervals[0],
                 examples: [intervals[0]]
               },
               intervalCount: { 
                 type: 'integer',
-                default: 1,
+                // default: 1,
                 examples: [1]
               }
             },
