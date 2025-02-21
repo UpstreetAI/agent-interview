@@ -84,14 +84,7 @@ export const runInterview = async (agentJson, {
   );
   
   const getAnswer = async (question) => {
-    // console.log('get answer 1', {
-    //   question,
-    // });
     const answer = await questionLogger.askQuestion(question);
-    // console.log('get answer 2', {
-    //   question,
-    //   answer,
-    // });
     return answer;
   };
   const featureSpecs = await registry.getAllPlugins();
