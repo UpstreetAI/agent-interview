@@ -6,9 +6,8 @@ import {
   type AbstractRegistry,
 } from './types/registry.ts';
 import {
-  type AbstractAgent,
   createAbstractAgent,
-} from './types/agent.ts';
+} from './lib/agent.ts';
 // import {
 //   ElizaosRegistry,
 // } from './registries/elizaos/elizaos-registry.ts';
