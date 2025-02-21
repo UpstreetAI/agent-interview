@@ -9,9 +9,11 @@ import mime from 'mime/lite';
 import ora from 'ora';
 import { CharacterCardParser } from 'character-card-parser';
 import {
-  type AgentConfig,
   type AbstractRegistry,
-} from './registries/registry.ts';
+} from './types/registry.ts';
+import {
+  type AgentJson,
+} from './types/agent.ts';
 
 import { AgentInterview } from './lib/agent-interview.mjs';
 import {
@@ -74,7 +76,7 @@ export const runInterview = async (agentJson, {
   errorStream?: Writable;
   events?: EventTarget;
   registry?: AbstractRegistry;
-}): Promise<AgentConfig> => {
+}): Promise<AgentJson> => {
   const questionLogger = new InterviewLogger(
     inputStream && outputStream
       ? new StreamStrategy(inputStream, outputStream)

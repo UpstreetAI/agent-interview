@@ -2,10 +2,12 @@ import { z } from 'zod';
 import dedent from 'dedent';
 
 import {
-  AbstractRegistry,
   type PluginConfig,
   type PluginConfigExt,
-} from '../registry.ts';
+} from '../../types/plugin.ts';
+import {
+  AbstractRegistry,
+} from '../../types/registry.ts';
 
 const currencies = ['usd'];
 const intervals = ['month', 'year', 'week', 'day'];

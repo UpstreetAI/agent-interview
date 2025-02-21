@@ -3,9 +3,11 @@ import {
   runInterview,
 } from './cli.ts';
 import {
-  type AgentConfig,
   type AbstractRegistry,
-} from './registries/registry.ts';
+} from './types/registry.ts';
+import {
+  type AbstractAgent,
+} from './types/agent.ts';
 // import {
 //   ElizaosRegistry,
 // } from './registries/elizaos/elizaos-registry.ts';
@@ -45,7 +47,7 @@ export const createAgent = async ({
   // load the plugins
   // const plugins = await registry.getAllPlugins();
 
-  let agentJson: AgentConfig = json;
+  let agentJson: AbstractAgent = json;
   agentJson = await runInterview(agentJson, {
     prompt,
     mode: 'auto',
