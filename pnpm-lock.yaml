@@ -32,6 +32,9 @@ importers:
       dotenv-formatter:
         specifier: ^0.0.1
         version: 0.0.1
+      json-schema-to-zod-safe:
+        specifier: ^0.0.1
+        version: 0.0.1
       mime:
         specifier: ^4.0.6
         version: 4.0.6
@@ -706,6 +709,9 @@ packages:
   joycon@3.1.1:
     resolution: {integrity: sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw==}
     engines: {node: '>=10'}
+
+  json-schema-to-zod-safe@0.0.1:
+    resolution: {integrity: sha512-V4qugzLUws+YPPeQcjCOHoYWddBi9wlUDX1nvBW49ZDVnPlhWJVQXxG+600OxGcG8nfamT8x8d9AhhGn5H/BvA==}
 
   json5@2.2.3:
     resolution: {integrity: sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==}
@@ -1605,6 +1611,8 @@ snapshots:
       '@isaacs/cliui': 8.0.2
 
   joycon@3.1.1: {}
+
+  json-schema-to-zod-safe@0.0.1: {}
 
   json5@2.2.3: {}
 
