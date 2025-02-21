@@ -83,19 +83,31 @@ const generateFeaturePrompt = (
     dedent`\
       The available features are:
     ` + '\n' +
-    featureSpecs.map(feature => {
-      const fullName = feature.plugin.full_name;
+    JSON.stringify(featureSpecs.map(feature => {
+      const name = feature.plugin.full_name;
       const description = feature.plugin.description;
-      return `# ${fullName}\n${description}`;
-    }).join('\n') + '\n\n'
+      return {
+        name,
+        description,
+      }
+    }), null, 2) + '\n\n'
   ) : (
     dedent`\
       The agent is given the following features:
     ` + '\n' +
-    Array.from(userSpecifiedFeatures).map(fullName => {
-      const spec = featureSpecs.find(spec => spec.plugin.full_name === fullName);
-      return spec ? `# ${spec.plugin.full_name}\n${spec.plugin.description}` : `# ${fullName}\nDescription not available.`;
-    }).join('\n') + '\n\n'
+    JSON.stringify(
+      Array.from(userSpecifiedFeatures)
+        .map(fullName => {
+          const spec = featureSpecs.find(spec => spec.plugin.full_name === fullName);
+          return spec ? {
+            name: spec.plugin.full_name,
+            description: spec.plugin.description,
+          } : {
+            name: spec.plugin.full_name,
+            description: 'Description not available.',
+          };
+        }),
+    null, 2) + '\n\n'
   );
 
   // console.log('feature prompt', prompt);
