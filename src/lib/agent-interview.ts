@@ -35,6 +35,13 @@ const makePromise = () => {
   (promise as any).reject = reject;
   return promise;
 };
+const pluginParametersToZod = (pluginParameters: Record<string, any>) => {
+  const result = {};
+  for (const [key, value] of Object.entries(pluginParameters)) {
+    result[key] = jsonSchemaToZod(value);
+  }
+  return z.object(result);
+};
 
 const processFeatures = (
   agentJson: AbstractAgent,
@@ -60,7 +67,11 @@ const processFeatures = (
   const result = {};
   for (const featureSpec of featureSpecs) {
     const name = featureSpec.plugin.full_name;
-    const schema = jsonSchemaToZod(featureSpec.agentConfig.pluginParameters);
+    const pluginParameters = featureSpec.agentConfig?.pluginParameters;
+    const schema = pluginParameters ?
+      pluginParametersToZod(featureSpec.agentConfig.pluginParameters)
+    :
+      z.null();
     if (allowAll || userSpecifiedFeatures.has(name)) {
       result[name] = schema.optional();
     }
