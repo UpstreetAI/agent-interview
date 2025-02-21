@@ -19,8 +19,10 @@ import {
 //
 
 const testRegistry = async ({
+  prompt,
   registry,
 }: {
+  prompt: string;
   registry: AbstractRegistry;
 }) => {
   const events = new EventTarget();
@@ -32,7 +34,7 @@ const testRegistry = async ({
   // errorStream.pipe(process.stderr);
 
   const agent = await createAgent({
-    prompt: 'You are Donald Trump.',
+    prompt,
     events,
     inputStream,
     outputStream,
@@ -40,14 +42,20 @@ const testRegistry = async ({
     registry,
     format: 'react-agents',
   });
-  console.log(agent);
+  console.log(JSON.stringify({
+    ...agent,
+    previewUrl: agent.previewUrl?.slice(0, 100) + '...',
+    homespaceUrl: agent.homespaceUrl?.slice(0, 100) + '...',
+  }, null, 2));
 };
 const test = async () => {
   dotenv.config();
   await testRegistry({
+    prompt: 'You are Donald Trump. You must support the TTS feature.',
     registry: new ReactAgentsRegistry(),
   });
   // await testRegistry({
+  //   prompt: 'You are Donald Trump. You must support the TTS feature.',
   //   registry: new ElizaosRegistry(),
   // });
 };
