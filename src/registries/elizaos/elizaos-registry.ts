@@ -1,8 +1,10 @@
 import {
   AbstractRegistry,
+} from '../../types/registry.ts';
+import {
   type PluginConfig,
   type PluginConfigExt,
-} from '../registry.ts';
+} from '../../types/plugin.ts';
 
 const eosRegistryBaseUrl = `https://eliza-plugins-hub.vercel.app/api`;
 export class ElizaosRegistry extends AbstractRegistry {

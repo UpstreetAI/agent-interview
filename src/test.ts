@@ -9,13 +9,20 @@ import {
 import {
   ReactAgentsRegistry,
 } from './registries/react-agents/react-agents-registry.ts';
-// import {
-//   ElizaosRegistry,
-// } from './registries/elizaos/elizaos-registry.ts';
+import {
+  ElizaosRegistry,
+} from './registries/elizaos/elizaos-registry.ts';
+import {
+  type AbstractRegistry,
+} from './types/registry.ts';
 
 //
 
-const test = async () => {
+const testRegistry = async ({
+  registry,
+}: {
+  registry: AbstractRegistry;
+}) => {
   const events = new EventTarget();
   const inputStream = new PassThrough();
   inputStream.end();
@@ -24,7 +31,6 @@ const test = async () => {
   // const errorStream = new PassThrough();
   // errorStream.pipe(process.stderr);
 
-  const registry = new ReactAgentsRegistry();
   const agent = await createAgent({
     prompt: 'You are Donald Trump.',
     events,
@@ -35,6 +41,15 @@ const test = async () => {
     format: 'react-agents',
   });
   console.log(agent);
+};
+const test = async () => {
+  dotenv.config();
+  await testRegistry({
+    registry: new ReactAgentsRegistry(),
+  });
+  // await testRegistry({
+  //   registry: new ElizaosRegistry(),
+  // });
 };
 (async () => {
   dotenv.config();
