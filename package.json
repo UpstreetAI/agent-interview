@@ -16,6 +16,7 @@
   },
   "homepage": "https://github.com/UpstreetAI/agent-interview#readme",
   "scripts": {
+    "test": "node --no-warnings ./src/test.ts",
     "dev": "node --no-warnings ./src/main.ts",
     "build": "tsup ./src/main.ts ./src/api.ts --dts --format esm --out-dir ./dist"
   },
