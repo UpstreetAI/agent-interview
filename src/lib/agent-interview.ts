@@ -60,7 +60,7 @@ const processFeatures = (
   const result = {};
   for (const featureSpec of featureSpecs) {
     const name = featureSpec.plugin.full_name;
-    const schema = jsonSchemaToZod(featureSpec.packageJson.agentConfig.pluginParameters);
+    const schema = jsonSchemaToZod(featureSpec.agentConfig.pluginParameters);
     if (allowAll || userSpecifiedFeatures.has(name)) {
       result[name] = schema.optional();
     }

@@ -32,10 +32,6 @@ type PluginPackageJson = {
   name: string;
   version?: string;
   description?: string;
-  agentConfig: {
-    pluginType: string;
-    pluginParameters: Record<string, any>;
-  },
 };
 type PluginAgentConfig = {
   pluginType: string;

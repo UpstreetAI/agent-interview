@@ -77,6 +77,7 @@ export const defaultVoices = [
 export const featureSpecs = [
   {
     name: 'tts',
+    version: '0.0.1',
     description: dedent`\
       Text to speech.
       Available voice endpoints:
@@ -114,6 +115,7 @@ export const featureSpecs = [
   },
   {
     name: 'rateLimit',
+    version: '0.0.1',
     description: dedent`\
       Agent is publicly available.
       The rate limit is \`maxUserMessages\` messages per \`maxUserMessagesTime\` milliseconds.
@@ -172,6 +174,7 @@ export const featureSpecs = [
   },
   {
     name: 'discord',
+    version: '0.0.1',
     description: dedent`\
       Add Discord integration to the agent. Add this feature only when the user explicitly requests it and provides a bot token.
 
@@ -230,6 +233,7 @@ export const featureSpecs = [
   },
   {
     name: 'twitterBot',
+    version: '0.0.1',
     description: dedent`\
       Add a Twitter bot to the agent.
 
@@ -266,6 +270,7 @@ export const featureSpecs = [
   },
   {
     name: 'telnyx',
+    version: '0.0.1',
     description: dedent`\
       Add Telnyx phone call/SMS support to the agent. Add this feature only when the user explicitly requests it and provides an api key.
 
@@ -336,6 +341,7 @@ export const featureSpecs = [
   },
   {
     name: 'storeItems',
+    version: '0.0.1',
     description: dedent`\
       List of items that can be purchased from the agent, with associated prices.
       \`amount\` in cents (e.g. 100 = $1).
@@ -467,7 +473,11 @@ export class ReactAgentsRegistry extends AbstractRegistry {
           logo: '',
         },
         stats: makeStats(),
-        packageJson: {},
+        packageJson: {
+          name: featureSpec.name,
+          version: featureSpec.version,
+          description: featureSpec.description,
+        },
         agentConfig: {
           pluginType: 'react-agents:feature:1.0.0',
           pluginParameters: featureSpec.schema,
