@@ -84,16 +84,12 @@ export const featureSpecs = [
     ` + '\n'
       + defaultVoices.map( v => `* ${JSON.stringify( v.name )}: ${v.voiceEndpoint}` ).join( '\n' ),
     schema: {
-      type: 'object',
-      properties: {
-        voiceEndpoint: {
-          type: 'string',
-          enum: defaultVoices.map(v => v.voiceEndpoint),
-          // default: defaultVoices[0].voiceEndpoint,
-          examples: [defaultVoices[0].voiceEndpoint]
-        }
-      },
-      required: ['voiceEndpoint']
+      voiceEndpoint: {
+        type: 'string',
+        enum: defaultVoices.map(v => v.voiceEndpoint),
+        // default: defaultVoices[0].voiceEndpoint,
+        examples: [defaultVoices[0].voiceEndpoint]
+      }
     },
     examples: [{ voiceEndpoint: defaultVoices[0].voiceEndpoint },],
 
@@ -125,23 +121,20 @@ export const featureSpecs = [
     ` + '\n'
       + defaultVoices.map( v => `* ${JSON.stringify( v.name )}: ${v.voiceEndpoint}` ).join( '\n' ),
     schema: {
-      type: 'object',
-      properties: {
-        maxUserMessages: { 
-          type: 'number',
-          // default: 5,
-          examples: [5]
-        },
-        maxUserMessagesTime: { 
-          type: 'number',
-          // default: 60000,
-          examples: [60000]
-        },
-        message: { 
-          type: 'string',
-          // default: "Whoa there! Take a moment.",
-          examples: ["Whoa there! Take a moment."]
-        }
+      maxUserMessages: { 
+        type: 'number',
+        // default: 5,
+        examples: [5]
+      },
+      maxUserMessagesTime: { 
+        type: 'number',
+        // default: 60000,
+        examples: [60000]
+      },
+      message: { 
+        type: 'string',
+        // default: "Whoa there! Take a moment.",
+        examples: ["Whoa there! Take a moment."]
       }
     },
     examples: [{ maxUserMessages: 5, maxUserMessagesTime: 60000, message: "Whoa there! Take a moment.", }],
@@ -189,21 +182,17 @@ export const featureSpecs = [
       \`channels\` is a list of channel names (text or voice) that the agent should join.
     `,
     schema: {
-      type: 'object',
-      properties: {
-        token: { 
-          type: 'string',
-          // default: '',
-          examples: ['YOUR_DISCORD_BOT_TOKEN']
-        },
-        channels: {
-          type: 'array',
-          items: { type: 'string' },
-          // default: ['general', 'voice'],
-          examples: [['general', 'voice']]
-        }
+      token: { 
+        type: 'string',
+        // default: '',
+        examples: ['YOUR_DISCORD_BOT_TOKEN']
       },
-      required: ['token', 'channels']
+      channels: {
+        type: 'array',
+        items: { type: 'string' },
+        // default: ['general', 'voice'],
+        examples: [['general', 'voice']]
+      }
     },
     examples: [{ token: 'YOUR_DISCORD_BOT_TOKEN', channels: ['general', 'voice'], }],
 
@@ -241,15 +230,11 @@ export const featureSpecs = [
       The API token is required.
     `,
     schema: {
-      type: 'object',
-      properties: {
-        token: { 
-          type: 'string',
-          // default: '',
-          examples: ['YOUR_TWITTER_BOT_TOKEN']
-        }
-      },
-      required: ['token']
+      token: { 
+        type: 'string',
+        // default: '',
+        examples: ['YOUR_TWITTER_BOT_TOKEN']
+      }
     },
     examples: [{ token: 'YOUR_TWITTER_BOT_TOKEN', }],
 
@@ -278,30 +263,26 @@ export const featureSpecs = [
       Phone number is optional, but if provided must be in +E.164 format (e.g. +14151234567).
     `,
     schema: {
-      type: 'object',
-      properties: {
-        apiKey: { 
-          type: 'string',
-          // default: '',
-          examples: ['YOUR_TELNYX_API_KEY']
-        },
-        phoneNumber: { 
-          type: 'string',
-          // default: '',
-          examples: ['+14151234567']
-        },
-        message: { 
-          type: 'boolean',
-          // default: false,
-          examples: [true]
-        },
-        voice: { 
-          type: 'boolean',
-          // default: false,
-          examples: [true]
-        }
+      apiKey: { 
+        type: 'string',
+        // default: '',
+        examples: ['YOUR_TELNYX_API_KEY']
       },
-      required: ['apiKey', 'message', 'voice']
+      phoneNumber: { 
+        type: 'string',
+        // default: '',
+        examples: ['+14151234567']
+      },
+      message: { 
+        type: 'boolean',
+        // default: false,
+        examples: [true]
+      },
+      voice: { 
+        type: 'boolean',
+        // default: false,
+        examples: [true]
+      }
     },
     examples: [{ apiKey: 'YOUR_TELNYX_API_KEY', phoneNumber: '+14151234567', message: true, voice: true, }],
 
@@ -348,72 +329,69 @@ export const featureSpecs = [
       \`amount\` in cents (e.g. 100 = $1).
     `,
     schema: {
-      type: 'array',
       items: {
-        type: 'object',
-        properties: {
-          type: {
-            type: 'string',
-            enum: ['payment', 'subscription'],
-            // default: 'payment',
-            examples: ['payment']
-          },
-          props: {
-            type: 'object',
-            properties: {
-              name: { 
-                type: 'string',
-                // default: '',
-                examples: ['Art']
-              },
-              description: { 
-                type: 'string',
-                // default: '',
-                examples: ['An art piece']
-              },
-              amount: { 
-                type: 'integer',
-                // default: 100,
-                examples: [499]
-              },
-              currency: { 
-                type: 'string', 
-                enum: currencies,
-                // default: currencies[0],
-                examples: ['usd']
-              },
-              interval: { 
-                type: 'string', 
-                enum: intervals,
-                // default: intervals[0],
-                examples: [intervals[0]]
-              },
-              intervalCount: { 
-                type: 'integer',
-                // default: 1,
-                examples: [1]
-              }
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+              enum: ['payment', 'subscription'],
+              examples: ['payment']
             },
-            required: ['amount', 'currency', 'interval', 'intervalCount']
-          }
-        },
-        required: ['type', 'props']
+            props: {
+              type: 'object',
+              properties: {
+                name: { 
+                  type: 'string',
+                  examples: ['Art']
+                },
+                description: { 
+                  type: 'string',
+                  examples: ['An art piece']
+                },
+                amount: { 
+                  type: 'integer',
+                  examples: [499]
+                },
+                currency: { 
+                  type: 'string', 
+                  enum: currencies,
+                  examples: ['usd']
+                },
+                interval: { 
+                  type: 'string', 
+                  enum: intervals,
+                  examples: [intervals[0]]
+                },
+                intervalCount: { 
+                  type: 'integer',
+                  examples: [1]
+                }
+              },
+              required: ['amount', 'currency', 'interval', 'intervalCount']
+            }
+          },
+          required: ['type', 'props']
+        }
       }
     },
-    examples: [{ type: 'payment', props: { name: 'Art', description: 'An art piece', amount: 499, currency: 'usd', }, },],
+    examples: [{ items: [{ type: 'payment', props: { name: 'Art', description: 'An art piece', amount: 499, currency: 'usd', }, },], }],
 
     // Default values
     default: [
       {
-        type: 'payment',
-        props: {
-          name: '',
-          description: '',
-          amount: 100,
-          currency: currencies[0],
-          interval: intervals[0],
-          intervalCount: 1,
-        },
+        items: [{
+          type: 'payment',
+          props: {
+            name: '',
+            description: '',
+            amount: 100,
+            currency: currencies[0],
+            interval: intervals[0],
+            intervalCount: 1,
+          },
+        }],
       }
     ],
 
