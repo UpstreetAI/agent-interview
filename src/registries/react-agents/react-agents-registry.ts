@@ -407,6 +407,5 @@ export class ReactAgentsRegistry extends AbstractRegistry {
         readmeContent: featureSpec.description,
       };
     }));
-    // return Promise.resolve(featureSpecs as unknown as PluginConfigExt[]);
   }
 }
