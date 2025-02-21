@@ -339,40 +339,34 @@ export const featureSpecs = [
               enum: ['payment', 'subscription'],
               examples: ['payment']
             },
-            props: {
-              type: 'object',
-              properties: {
-                name: { 
-                  type: 'string',
-                  examples: ['Art']
-                },
-                description: { 
-                  type: 'string',
-                  examples: ['An art piece']
-                },
-                amount: { 
-                  type: 'integer',
-                  examples: [499]
-                },
-                currency: { 
-                  type: 'string', 
-                  enum: currencies,
-                  examples: ['usd']
-                },
-                interval: { 
-                  type: 'string', 
-                  enum: intervals,
-                  examples: [intervals[0]]
-                },
-                intervalCount: { 
-                  type: 'integer',
-                  examples: [1]
-                }
-              },
-              required: ['amount', 'currency', 'interval', 'intervalCount']
+            name: { 
+              type: 'string',
+              examples: ['Art']
+            },
+            description: { 
+              type: 'string',
+              examples: ['An art piece']
+            },
+            amount: { 
+              type: 'integer',
+              examples: [499]
+            },
+            currency: { 
+              type: 'string', 
+              enum: currencies,
+              examples: ['usd']
+            },
+            interval: { 
+              type: 'string', 
+              enum: intervals,
+              examples: [intervals[0]]
+            },
+            intervalCount: { 
+              type: 'integer',
+              examples: [1]
             }
           },
-          required: ['type', 'props']
+          required: ['type', 'props', 'amount', 'currency', 'interval', 'intervalCount']
         }
       }
     },
