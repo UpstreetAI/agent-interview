@@ -82,12 +82,16 @@ export const featureSpecs = [
       Available voice endpoints:
     ` + '\n'
       + defaultVoices.map( v => `* ${JSON.stringify( v.name )}: ${v.voiceEndpoint}` ).join( '\n' ),
-    schema: z.union( [
-      z.object( {
-        voiceEndpoint: z.enum( defaultVoices.map( v => v.voiceEndpoint ) ),
-      } ),
-      z.null(),
-    ] ),
+    schema: {
+      type: 'object',
+      properties: {
+        voiceEndpoint: {
+          type: 'string',
+          enum: defaultVoices.map(v => v.voiceEndpoint)
+        }
+      },
+      required: ['voiceEndpoint']
+    },
     examples: [{ voiceEndpoint: defaultVoices[0].voiceEndpoint },],
     // For Web UI
     displayIcon: 'Voice',
@@ -115,14 +119,14 @@ export const featureSpecs = [
       If either \`maxUserMessages\` or \`maxUserMessagesTime\` is not provided or zero, the rate limit is disabled.
     ` + '\n'
       + defaultVoices.map( v => `* ${JSON.stringify( v.name )}: ${v.voiceEndpoint}` ).join( '\n' ),
-    schema: z.union( [
-      z.object( {
-        maxUserMessages: z.number().optional(),
-        maxUserMessagesTime: z.number().optional(),
-        message: z.string().optional(),
-      } ),
-      z.null(),
-    ] ),
+    schema: {
+      type: 'object',
+      properties: {
+        maxUserMessages: { type: 'number' },
+        maxUserMessagesTime: { type: 'number' },
+        message: { type: 'string' }
+      }
+    },
     examples: [{ maxUserMessages: 5, maxUserMessagesTime: 60000, message: "Whoa there! Take a moment.", }],
 
     // For Web UI
@@ -166,13 +170,17 @@ export const featureSpecs = [
 
       \`channels\` is a list of channel names (text or voice) that the agent should join.
     `,
-    schema: z.union( [
-      z.object( {
-        token: z.string(),
-        channels: z.array( z.string() ),
-      } ),
-      z.null(),
-    ] ),
+    schema: {
+      type: 'object',
+      properties: {
+        token: { type: 'string' },
+        channels: {
+          type: 'array',
+          items: { type: 'string' }
+        }
+      },
+      required: ['token', 'channels']
+    },
     examples: [{ token: 'YOUR_DISCORD_BOT_TOKEN', channels: ['general', 'voice'], }],
 
     // For Web UI
@@ -207,12 +215,13 @@ export const featureSpecs = [
 
       The API token is required.
     `,
-    schema: z.union( [
-      z.object( {
-        token: z.string(),
-      } ),
-      z.null(),
-    ] ),
+    schema: {
+      type: 'object',
+      properties: {
+        token: { type: 'string' }
+      },
+      required: ['token']
+    },
     examples: [{ token: 'YOUR_TWITTER_BOT_TOKEN', }],
 
     // For Web UI
@@ -238,15 +247,16 @@ export const featureSpecs = [
 
       Phone number is optional, but if provided must be in +E.164 format (e.g. +14151234567).
     `,
-    schema: z.union( [
-      z.object( {
-        apiKey: z.string(),
-        phoneNumber: z.string().optional(),
-        message: z.boolean(),
-        voice: z.boolean(),
-      } ),
-      z.null(),
-    ] ),
+    schema: {
+      type: 'object',
+      properties: {
+        apiKey: { type: 'string' },
+        phoneNumber: { type: 'string' },
+        message: { type: 'boolean' },
+        voice: { type: 'boolean' }
+      },
+      required: ['apiKey', 'message', 'voice']
+    },
     examples: [{ apiKey: 'YOUR_TELNYX_API_KEY', phoneNumber: '+14151234567', message: true, voice: true, }],
 
     // For Web UI
@@ -290,10 +300,31 @@ export const featureSpecs = [
       List of items that can be purchased from the agent, with associated prices.
       \`amount\` in cents (e.g. 100 = $1).
     `,
-    schema: z.union( [
-      z.array( storeItemType ),
-      z.null(),
-    ] ),
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          type: {
+            type: 'string',
+            enum: ['payment', 'subscription']
+          },
+          props: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+              description: { type: 'string' },
+              amount: { type: 'integer' },
+              currency: { type: 'string', enum: currencies },
+              interval: { type: 'string', enum: intervals },
+              intervalCount: { type: 'integer' }
+            },
+            required: ['amount', 'currency', 'interval', 'intervalCount']
+          }
+        },
+        required: ['type', 'props']
+      }
+    },
     examples: [{ type: 'payment', props: { name: 'Art', description: 'An art piece', amount: 499, currency: 'usd', }, },],
 
     // Default values
@@ -340,10 +371,11 @@ export class ReactAgentsRegistry extends AbstractRegistry {
   }
   getAllPlugins(): Promise<PluginConfigExt[]> {
     // convert the featureSpecs to PluginConfigExt
+    const updatedDate = new Date().toISOString();
     return Promise.resolve(featureSpecs.map(featureSpec => {
       const makeOwner = () => ({
         avatar_url: '',
-        name: 'react-agents'
+        name: 'react-agents',
       });
       const makeStats = () => ({
         stargazers_count: 0,
@@ -359,20 +391,20 @@ export class ReactAgentsRegistry extends AbstractRegistry {
           full_name: `react-agents/${featureSpec.name}`,
           description: featureSpec.description,
           html_url: '',
-          updated_at: new Date().toISOString(),
+          updated_at: updatedDate,
           topics: [],
           license: '',
           is_official: true,
           banner: '',
-          logo: ''
+          logo: '',
         },
         stats: makeStats(),
         packageJson: {},
         agentConfig: {
           pluginType: 'react-agents:feature:1.0.0',
-          pluginParameters: {}
+          pluginParameters: featureSpec.schema,
         },
-        readmeContent: featureSpec.description
+        readmeContent: featureSpec.description,
       };
     }));
     // return Promise.resolve(featureSpecs as unknown as PluginConfigExt[]);
