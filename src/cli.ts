@@ -15,7 +15,7 @@ import {
   type AgentJson,
 } from './types/agent.ts';
 
-import { AgentInterview } from './lib/agent-interview.mjs';
+import { AgentInterview } from './lib/agent-interview.ts';
 import {
   ensureAgentJsonDefaults,
 } from './lib/agent-json-util.mjs';
