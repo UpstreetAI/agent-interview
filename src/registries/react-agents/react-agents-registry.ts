@@ -339,6 +339,42 @@ export class ReactAgentsRegistry extends AbstractRegistry {
     throw new Error('Not implemented');
   }
   getAllPlugins(): Promise<PluginConfigExt[]> {
-    return Promise.resolve(featureSpecs as unknown as PluginConfigExt[]);
+    // convert the featureSpecs to PluginConfigExt
+    return Promise.resolve(featureSpecs.map(featureSpec => {
+      const makeOwner = () => ({
+        avatar_url: '',
+        name: 'react-agents'
+      });
+      const makeStats = () => ({
+        stargazers_count: 0,
+        forks_count: 0,
+        open_issues_count: 0,
+        watchers_count: 0
+      });
+      
+      return {
+        plugin: {
+          owner: makeOwner(),
+          name: featureSpec.name,
+          full_name: `react-agents/${featureSpec.name}`,
+          description: featureSpec.description,
+          html_url: '',
+          updated_at: new Date().toISOString(),
+          topics: [],
+          license: '',
+          is_official: true,
+          banner: '',
+          logo: ''
+        },
+        stats: makeStats(),
+        packageJson: {},
+        agentConfig: {
+          pluginType: 'react-agents:feature:1.0.0',
+          pluginParameters: {}
+        },
+        readmeContent: featureSpec.description
+      };
+    }));
+    // return Promise.resolve(featureSpecs as unknown as PluginConfigExt[]);
   }
 }

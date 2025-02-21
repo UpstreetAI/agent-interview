@@ -1,5 +1,4 @@
 export type PluginConfig = {
-  id: number;
   owner: {
     avatar_url: string;
     name: string;
