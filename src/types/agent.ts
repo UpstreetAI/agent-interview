@@ -11,6 +11,18 @@ export type AbstractAgent = {
   voiceEndpoint?: string;
   features?: string[];
 };
+export const createAbstractAgent = (): AbstractAgent => ({
+  name: '',
+  description: '',
+  bio: '',
+  model: '',
+  smallModel: '',
+  largeModel: '',
+  avatarUrl: '',
+  homespaceUrl: '',
+  voiceEndpoint: '',
+  features: [],
+});
 
 // react-agents
 export type AgentJson = {

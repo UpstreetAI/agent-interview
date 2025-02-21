@@ -7,6 +7,7 @@ import {
 } from './types/registry.ts';
 import {
   type AbstractAgent,
+  createAbstractAgent,
 } from './types/agent.ts';
 // import {
 //   ElizaosRegistry,
@@ -47,7 +48,7 @@ export const createAgent = async ({
   // load the plugins
   // const plugins = await registry.getAllPlugins();
 
-  let agentJson: AbstractAgent = json;
+  let agentJson = createAbstractAgent();
   agentJson = await runInterview(agentJson, {
     prompt,
     mode: 'auto',
