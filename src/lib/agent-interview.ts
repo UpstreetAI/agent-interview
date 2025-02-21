@@ -44,17 +44,27 @@ const pluginParametersToZod = (pluginParameters: Record<string, any>) => {
 };
 
 const featureSpecsToZod = (featureSpecs: PluginConfigExt[]) => {
-  const result = {};
+  const featureTypes: z.ZodTypeAny[] = [];
   for (const featureSpec of featureSpecs) {
     const name = featureSpec.plugin.full_name;
     const pluginParameters = featureSpec.agentConfig?.pluginParameters;
     const schema = pluginParameters ?
       pluginParametersToZod(featureSpec.agentConfig.pluginParameters)
     :
-      z.null();
-    result[name] = schema.optional();
+      z.object({});
+    const featureType = z.object({
+      name: z.literal(name),
+      schema,
+    });
+    featureTypes.push(featureType);
   }
-  return z.object(result).optional();
+  if (featureTypes.length === 0) {
+    return z.array(z.never());
+  } else if (featureTypes.length === 1) {
+    return z.array(featureTypes[0]);
+  } else {
+    return z.array(z.union(featureTypes as any));
+  }
 };
 
 // Generate feature prompt
@@ -92,7 +102,6 @@ export class AgentInterview extends EventTarget {
     } = opts;
 
     // generate the features available prompt
-    const featureSchemas = featureSpecsToZod(featureSpecs);
     const featuresAvailablePrompt = generateFeaturePrompt(featureSpecs);
 
     // character image generator
@@ -150,6 +159,7 @@ export class AgentInterview extends EventTarget {
     }
 
     // interaction loop
+    const featureSchemas = featureSpecsToZod(featureSpecs);
     this.interactor = new Interactor({
       systemPrompt:
         dedent`\
