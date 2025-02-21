@@ -87,7 +87,9 @@ export const featureSpecs = [
       properties: {
         voiceEndpoint: {
           type: 'string',
-          enum: defaultVoices.map(v => v.voiceEndpoint)
+          enum: defaultVoices.map(v => v.voiceEndpoint),
+          default: defaultVoices[0].voiceEndpoint,
+          examples: [defaultVoices[0].voiceEndpoint]
         }
       },
       required: ['voiceEndpoint']
@@ -122,9 +124,21 @@ export const featureSpecs = [
     schema: {
       type: 'object',
       properties: {
-        maxUserMessages: { type: 'number' },
-        maxUserMessagesTime: { type: 'number' },
-        message: { type: 'string' }
+        maxUserMessages: { 
+          type: 'number',
+          default: 5,
+          examples: [5]
+        },
+        maxUserMessagesTime: { 
+          type: 'number',
+          default: 60000,
+          examples: [60000]
+        },
+        message: { 
+          type: 'string',
+          default: "Whoa there! Take a moment.",
+          examples: ["Whoa there! Take a moment."]
+        }
       }
     },
     examples: [{ maxUserMessages: 5, maxUserMessagesTime: 60000, message: "Whoa there! Take a moment.", }],
@@ -173,10 +187,16 @@ export const featureSpecs = [
     schema: {
       type: 'object',
       properties: {
-        token: { type: 'string' },
+        token: { 
+          type: 'string',
+          default: '',
+          examples: ['YOUR_DISCORD_BOT_TOKEN']
+        },
         channels: {
           type: 'array',
-          items: { type: 'string' }
+          items: { type: 'string' },
+          default: ['general', 'voice'],
+          examples: [['general', 'voice']]
         }
       },
       required: ['token', 'channels']
@@ -218,7 +238,11 @@ export const featureSpecs = [
     schema: {
       type: 'object',
       properties: {
-        token: { type: 'string' }
+        token: { 
+          type: 'string',
+          default: '',
+          examples: ['YOUR_TWITTER_BOT_TOKEN']
+        }
       },
       required: ['token']
     },
@@ -250,10 +274,26 @@ export const featureSpecs = [
     schema: {
       type: 'object',
       properties: {
-        apiKey: { type: 'string' },
-        phoneNumber: { type: 'string' },
-        message: { type: 'boolean' },
-        voice: { type: 'boolean' }
+        apiKey: { 
+          type: 'string',
+          default: '',
+          examples: ['YOUR_TELNYX_API_KEY']
+        },
+        phoneNumber: { 
+          type: 'string',
+          default: '',
+          examples: ['+14151234567']
+        },
+        message: { 
+          type: 'boolean',
+          default: false,
+          examples: [true]
+        },
+        voice: { 
+          type: 'boolean',
+          default: false,
+          examples: [true]
+        }
       },
       required: ['apiKey', 'message', 'voice']
     },
@@ -307,17 +347,45 @@ export const featureSpecs = [
         properties: {
           type: {
             type: 'string',
-            enum: ['payment', 'subscription']
+            enum: ['payment', 'subscription'],
+            default: 'payment',
+            examples: ['payment']
           },
           props: {
             type: 'object',
             properties: {
-              name: { type: 'string' },
-              description: { type: 'string' },
-              amount: { type: 'integer' },
-              currency: { type: 'string', enum: currencies },
-              interval: { type: 'string', enum: intervals },
-              intervalCount: { type: 'integer' }
+              name: { 
+                type: 'string',
+                default: '',
+                examples: ['Art']
+              },
+              description: { 
+                type: 'string',
+                default: '',
+                examples: ['An art piece']
+              },
+              amount: { 
+                type: 'integer',
+                default: 100,
+                examples: [499]
+              },
+              currency: { 
+                type: 'string', 
+                enum: currencies,
+                default: currencies[0],
+                examples: ['usd']
+              },
+              interval: { 
+                type: 'string', 
+                enum: intervals,
+                default: intervals[0],
+                examples: [intervals[0]]
+              },
+              intervalCount: { 
+                type: 'integer',
+                default: 1,
+                examples: [1]
+              }
             },
             required: ['amount', 'currency', 'interval', 'intervalCount']
           }
