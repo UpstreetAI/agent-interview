@@ -25,12 +25,12 @@ import {
   generateBackgroundImage,
 } from './generate-image.mjs';
 
-const makePromise = () => {
+const makePromise = <T>() => {
   const {
     promise,
     resolve,
     reject,
-  } = Promise.withResolvers();
+  } = Promise.withResolvers<T>();
   (promise as any).resolve = resolve;
   (promise as any).reject = reject;
   return promise;
