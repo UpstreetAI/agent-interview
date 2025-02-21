@@ -3,6 +3,16 @@ import { z } from 'zod';
 import {
   blobToDataUrl,
 } from 'base64-universal';
+import {
+  jsonSchemaToZod,
+} from 'json-schema-to-zod-safe';
+
+import {
+  type AbstractAgent,
+} from '../types/agent.ts';
+import {
+  type PluginConfigExt,
+} from '../types/plugin.ts';
 
 import {
   Interactor,
@@ -14,9 +24,6 @@ import {
   generateCharacterImage,
   generateBackgroundImage,
 } from './generate-image.mjs';
-// import {
-//   featureSpecs,
-// } from './agent-features-spec.mjs';
 
 const makePromise = () => {
   const {
@@ -24,14 +31,21 @@ const makePromise = () => {
     resolve,
     reject,
   } = Promise.withResolvers();
-  promise.resolve = resolve;
-  promise.reject = reject;
+  (promise as any).resolve = resolve;
+  (promise as any).reject = reject;
   return promise;
 };
 
-const processFeatures = (agentJson, featureSpecs) => {
+const processFeatures = (
+  agentJson: AbstractAgent,
+  featureSpecs: PluginConfigExt[],
+): {
+  result: Record<string, z.ZodOptional<z.ZodAny>>;
+  userSpecifiedFeatures: Set<string>;
+  allowAll: boolean;
+} => {
   const userSpecifiedFeatures = new Set(Object.keys(agentJson.features || {}));
-  const validFeatures = new Set(featureSpecs.map(spec => spec.name));
+  const validFeatures = new Set(featureSpecs.map(spec => spec.plugin.full_name));
 
   // Check for invalid user-specified features and throw an error if any are found
   for (const feature of userSpecifiedFeatures) {
@@ -45,17 +59,12 @@ const processFeatures = (agentJson, featureSpecs) => {
 
   const result = {};
   for (const featureSpec of featureSpecs) {
-    const { name, schema } = featureSpec;
+    const name = featureSpec.plugin.full_name;
+    const schema = jsonSchemaToZod(featureSpec.packageJson.agentConfig.pluginParameters);
     if (allowAll || userSpecifiedFeatures.has(name)) {
       result[name] = schema.optional();
     }
   }
-
-  // console.log('process features', {
-  //   result,
-  //   userSpecifiedFeatures,
-  //   allowAll,
-  // });
 
   return {
     result,
@@ -65,21 +74,27 @@ const processFeatures = (agentJson, featureSpecs) => {
 };
 
 // Generate feature prompt
-const generateFeaturePrompt = (featureSpecs, userSpecifiedFeatures, allowAll) => {
+const generateFeaturePrompt = (
+  featureSpecs: PluginConfigExt[],
+  userSpecifiedFeatures: Set<string>,
+  allowAll: boolean,
+) => {
   const prompt =  allowAll ? (
     dedent`\
       The available features are:
     ` + '\n' +
-    featureSpecs.map(({ name, description }) => {
-      return `# ${name}\n${description}`;
+    featureSpecs.map(feature => {
+      const fullName = feature.plugin.full_name;
+      const description = feature.plugin.description;
+      return `# ${fullName}\n${description}`;
     }).join('\n') + '\n\n'
   ) : (
     dedent`\
       The agent is given the following features:
     ` + '\n' +
-    Array.from(userSpecifiedFeatures).map(feature => {
-      const spec = featureSpecs.find(spec => spec.name === feature);
-      return spec ? `# ${spec.name}\n${spec.description}` : `# ${feature}\nDescription not available.`;
+    Array.from(userSpecifiedFeatures).map(fullName => {
+      const spec = featureSpecs.find(spec => spec.plugin.full_name === fullName);
+      return spec ? `# ${spec.plugin.full_name}\n${spec.plugin.description}` : `# ${fullName}\nDescription not available.`;
     }).join('\n') + '\n\n'
   );
 
@@ -88,13 +103,18 @@ const generateFeaturePrompt = (featureSpecs, userSpecifiedFeatures, allowAll) =>
 };
 
 export class AgentInterview extends EventTarget {
-  constructor(opts) {
+  constructor(opts: {
+    agentJson: AbstractAgent;
+    prompt: string;
+    mode: 'auto' | 'interactive' | 'manual';
+    featureSpecs: PluginConfigExt[];
+  }) {
     super();
 
     let {
-      agentJson, // object
-      prompt, // string
-      mode, // 'auto' | 'interactive' | 'manual'
+      agentJson,
+      prompt,
+      mode,
       featureSpecs,
     } = opts;
 
