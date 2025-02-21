@@ -43,27 +43,7 @@ const pluginParametersToZod = (pluginParameters: Record<string, any>) => {
   return z.object(result);
 };
 
-const processFeatures = (
-  agentJson: AbstractAgent,
-  featureSpecs: PluginConfigExt[],
-): {
-  result: Record<string, z.ZodOptional<z.ZodAny>>;
-  userSpecifiedFeatures: Set<string>;
-  allowAll: boolean;
-} => {
-  const userSpecifiedFeatures = new Set(Object.keys(agentJson.features || {}));
-  const validFeatures = new Set(featureSpecs.map(spec => spec.plugin.full_name));
-
-  // Check for invalid user-specified features and throw an error if any are found
-  for (const feature of userSpecifiedFeatures) {
-    if (!validFeatures.has(feature)) {
-      throw new Error(`Invalid feature specified: ${feature}`);
-    }
-  }
-
-  // allow the agent interview to possibly utilise all if no features are specified
-  const allowAll = userSpecifiedFeatures.size === 0;
-
+const featureSpecsToZod = (featureSpecs: PluginConfigExt[]) => {
   const result = {};
   for (const featureSpec of featureSpecs) {
     const name = featureSpec.plugin.full_name;
@@ -72,60 +52,30 @@ const processFeatures = (
       pluginParametersToZod(featureSpec.agentConfig.pluginParameters)
     :
       z.null();
-    if (allowAll || userSpecifiedFeatures.has(name)) {
-      result[name] = schema.optional();
-    }
+    result[name] = schema.optional();
   }
-
-  return {
-    result,
-    userSpecifiedFeatures,
-    allowAll,
-  };
+  return z.object(result).optional();
 };
 
 // Generate feature prompt
-const generateFeaturePrompt = (
-  featureSpecs: PluginConfigExt[],
-  userSpecifiedFeatures: Set<string>,
-  allowAll: boolean,
-) => {
-  const prompt =  allowAll ? (
-    dedent`\
-      The available features are:
-    ` + '\n' +
-    JSON.stringify(featureSpecs.map(feature => {
-      const name = feature.plugin.full_name;
-      const description = feature.plugin.description;
-      return {
-        name,
-        description,
-      }
-    }), null, 2) + '\n\n'
-  ) : (
-    dedent`\
-      The agent is given the following features:
-    ` + '\n' +
-    JSON.stringify(
-      Array.from(userSpecifiedFeatures)
-        .map(fullName => {
-          const spec = featureSpecs.find(spec => spec.plugin.full_name === fullName);
-          return spec ? {
-            name: spec.plugin.full_name,
-            description: spec.plugin.description,
-          } : {
-            name: spec.plugin.full_name,
-            description: 'Description not available.',
-          };
-        }),
-    null, 2) + '\n\n'
-  );
-
-  // console.log('feature prompt', prompt);
-  return prompt;
+const generateFeaturePrompt = (featureSpecs: PluginConfigExt[]) => {
+  return dedent`\
+    The available features are:
+  ` + '\n' +
+  JSON.stringify(featureSpecs.map(feature => {
+    const name = feature.plugin.full_name;
+    const description = feature.plugin.description;
+    return {
+      name,
+      description,
+    }
+  }), null, 2) + '\n\n';
 };
 
 export class AgentInterview extends EventTarget {
+  interactor: Interactor;
+  loadPromise: Promise<AbstractAgent>;
+
   constructor(opts: {
     agentJson: AbstractAgent;
     prompt: string;
@@ -141,10 +91,9 @@ export class AgentInterview extends EventTarget {
       featureSpecs,
     } = opts;
 
-    const { result: featureSchemas, userSpecifiedFeatures, allowAll } = processFeatures(agentJson, featureSpecs);
-
     // generate the features available prompt
-    const featuresAvailablePrompt = generateFeaturePrompt(featureSpecs, userSpecifiedFeatures, allowAll);
+    const featureSchemas = featureSpecsToZod(featureSpecs);
+    const featuresAvailablePrompt = generateFeaturePrompt(featureSpecs);
 
     // character image generator
     const visualDescriptionValueUpdater = new ValueUpdater(async (visualDescription, {
@@ -190,7 +139,7 @@ export class AgentInterview extends EventTarget {
         },
       }));
     };
-    this.loadPromise = makePromise();
+    this.loadPromise = makePromise<AbstractAgent>();
 
     // initialize
     if (agentJson.previewUrl) {
@@ -231,7 +180,7 @@ export class AgentInterview extends EventTarget {
         description: z.string().optional(),
         visualDescription: z.string().optional(),
         homespaceDescription: z.string().optional(),
-        features: z.object(featureSchemas).optional(),
+        features: featureSchemas,
         private: z.boolean().optional(),
       }),
       formatFn: (updateObject) => {
