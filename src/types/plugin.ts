@@ -28,7 +28,15 @@ type PluginStats = {
   open_issues_count: number;
   watchers_count: number;
 };
-type PluginPackageJson = any;
+type PluginPackageJson = {
+  name: string;
+  version?: string;
+  description?: string;
+  agentConfig: {
+    pluginType: string;
+    pluginParameters: Record<string, any>;
+  },
+};
 type PluginAgentConfig = {
   pluginType: string;
   pluginParameters: Record<string, any>;
