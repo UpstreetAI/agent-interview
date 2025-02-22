@@ -1,204 +1,46 @@
 import path from 'path';
 import fs from 'fs';
-import { Readable, Writable } from 'stream';
+import { PassThrough } from 'stream';
+import readline from 'readline';
 
+import dotenv from 'dotenv';
 import { program } from 'commander';
 import pc from 'picocolors';
 import ansi from 'ansi-escapes';
 import mime from 'mime/lite';
 import ora from 'ora';
 import { CharacterCardParser } from 'character-card-parser';
-import {
-  type AbstractRegistry,
-} from './types/registry.ts';
-import {
-  type AgentJson,
-} from './types/agent.ts';
 
-import { AgentInterview } from './lib/agent-interview.ts';
+import {
+  createAgent,
+  editAgent,
+} from './api.ts';
+import {
+  runInterview,
+} from './lib/run-interview.ts';
+import {
+  type AgentInterviewMode,
+} from './lib/agent-interview.ts';
+import {
+  type AbstractAgent,
+} from './types/agent.ts';
+import {
+  ReactAgentsRegistry,
+} from './registries/react-agents/react-agents-registry.ts';
+import {
+  ElizaosRegistry,
+} from './registries/elizaos/elizaos-registry.ts';
+
 import {
   ensureAgentJsonDefaults,
 } from './lib/agent-json-util.mjs';
-import InterviewLogger from './lib/logger/interview-logger.mjs';
-import ReadlineStrategy from './lib/logger/readline.mjs';
-import StreamStrategy from './lib/logger/stream.mjs';
 
 //
 
-// const homeDir = os.homedir();
 const cwd = process.cwd();
 
-const logAgentPropertyUpdate = (propertyName, newValue) => {
-  // ANSI escape codes for colors
-  const colors = {
-    blue: '\x1b[34m',
-    green: '\x1b[32m',
-    yellow: '\x1b[33m',
-    cyan: '\x1b[36m',
-    reset: '\x1b[0m',
-    bold: '\x1b[1m',
-    dim: '\x1b[2m'
-  };
-
-  if (typeof newValue === 'object' && newValue !== null) {
-    console.log(`${colors.blue}${colors.bold}[AGENT UPDATE]${colors.reset} ${colors.cyan}${propertyName}${colors.reset}`);
-    Object.entries(newValue).forEach(([key, value]) => {
-      if (value !== null && value !== undefined) {
-        console.log(`  ${colors.dim}→${colors.reset} ${colors.yellow}${key}${colors.reset}: ${colors.green}${value}${colors.reset}`);
-      }
-    });
-  } else {
-    console.log(
-      `${colors.blue}${colors.bold}[AGENT UPDATE]${colors.reset} ${colors.cyan}${propertyName}${colors.reset} ${colors.dim}→${colors.reset} ${colors.green}${newValue}${colors.reset}`
-    );
-  }
-};
-
-const propertyLogger = (prefix) => (e) => {
-  logAgentPropertyUpdate(prefix, e.data);
-};
-
 //
 
-export const runInterview = async (agentJson, {
-  prompt,
-  mode,
-  inputStream,
-  outputStream,
-  errorStream,
-  events,
-  registry,
-} : {
-  prompt?: string;
-  mode?: string;
-  inputStream?: Readable;
-  outputStream?: Writable;
-  errorStream?: Writable;
-  events?: EventTarget;
-  registry?: AbstractRegistry;
-}): Promise<AgentJson> => {
-  const questionLogger = new InterviewLogger(
-    inputStream && outputStream
-      ? new StreamStrategy(inputStream, outputStream)
-      : new ReadlineStrategy(),
-  );
-  
-  const getAnswer = async (question) => {
-    const answer = await questionLogger.askQuestion(question);
-    return answer;
-  };
-  const featureSpecs = await registry.getAllPlugins();
-  const opts = {
-    agentJson,
-    prompt,
-    mode,
-    featureSpecs,
-  };
-
-  const spinner = ora({
-    text: '',
-    spinner: {
-      interval: 80,
-      frames: [
-        '●∙∙∙',
-        '∙●∙∙',
-        '∙∙●∙',
-        '∙∙∙●',
-        '∙∙∙∙',
-      ],
-    },
-    discardStdin: false,
-    isEnabled: !!errorStream,
-    stream: errorStream ?? process.stderr,
-  }).stop(); // initialize as stopped
-
-  let currentSpinnerState = false;
-  const updateSpinner = (isProcessing) => {
-    if (isProcessing && !currentSpinnerState) {
-      currentSpinnerState = true;
-      spinner.start();
-    } else if (!isProcessing && currentSpinnerState) {
-      currentSpinnerState = false;
-      spinner.stop();
-    }
-  };
-
-  const agentInterview = new AgentInterview(opts);
-  agentInterview.addEventListener('processingStateChange', (event) => {
-    try {
-      const {
-        isProcessing,
-      } = event.data;
-      updateSpinner(isProcessing);
-    } catch (error) {
-      console.error('Spinner error:', error);
-    }
-  });
-  agentInterview.addEventListener('input', async e => {
-    const {
-      question,
-    } = e.data;
-    // console.log('agent interview input 1', {
-    //   question,
-    // });
-
-    const answer = await getAnswer(question);
-
-    // console.log('agent interview input 2', {
-    //   question,
-    //   answer,
-    // });
-
-    agentInterview.write(answer);
-  });
-  agentInterview.addEventListener('output', async e => {
-    const {
-      text,
-    } = e.data;
-    // console.log('agent interview output', {
-    //   text,
-    // });
-    questionLogger.log(text);
-  });
-  agentInterview.addEventListener('change', e => {
-    const {
-      updateObject,
-      agentJson,
-    } = e.data;
-    // console.log('agent interview change', updateObject);
-  });
-  
-  if (events) {
-    ['avatar', 'homespace'].forEach(eventType => {
-      agentInterview.addEventListener(eventType, (e) => {
-        events.dispatchEvent(new MessageEvent(eventType, {
-          data: e.data,
-        }));
-      });
-    });
-  } else {
-    const imageLogger = (label) => async (e) => {
-      const {
-        result: blob,
-        signal,
-      } = e.data;
-
-      const ab = await blob.arrayBuffer();
-      if (signal.aborted) return;
-
-      logAgentPropertyUpdate(label, '');
-    };
-    agentInterview.addEventListener('avatar', imageLogger('Avatar updated (preview):'));
-    agentInterview.addEventListener('homespace', imageLogger('Homespace updated (preview):'));
-    agentInterview.addEventListener('name', propertyLogger('name'));
-    agentInterview.addEventListener('bio', propertyLogger('bio'));
-    agentInterview.addEventListener('description', propertyLogger('description'));
-    agentInterview.addEventListener('features', propertyLogger('features'));
-  }
-  const result = await agentInterview.waitForFinish();
-  questionLogger.close();
-  return result;
-};
 const getAgentJsonFromCharacterCard = async (p) => {
   const fileBuffer = await fs.promises.readFile(p);
   const fileBlob = new File([fileBuffer], path.basename(p));
@@ -312,7 +154,7 @@ export const create = async (args, opts) => {
       events,
     });
   }
- 
+
   agentJson = ensureAgentJsonDefaults(agentJson);
 
   // update destination directory if no specific path was provided
@@ -373,13 +215,13 @@ const updateFeatures = (agentJson, {
   //   addFeature,
   //   removeFeature,
   // });
-  
+
   if (removeFeature) {
     for (const feature of removeFeature) {
       delete agentJson.features[feature];
     }
   }
-  
+
   if (addFeature) {
     if (!agentJson.features) {
       agentJson.features = {};
@@ -458,6 +300,47 @@ export const edit = async (args, opts) => {
   await _updateFiles();
 };
 
+class Spinner {
+  private spinner: any;
+  private currentSpinnerState: boolean; 
+
+  constructor() {
+    this.spinner = ora({
+      text: '',
+      spinner: {
+        interval: 80,
+        frames: [
+          '●∙∙∙',
+          '∙●∙∙',
+          '∙∙●∙',
+          '∙∙∙●',
+          '∙∙∙∙',
+        ],
+      },
+      discardStdin: false,
+      // isEnabled: !!errorStream,
+      // stream: errorStream ?? process.stderr,
+    }).stop(); // initialize as stopped
+    this.currentSpinnerState = false;
+  }
+
+  update(isProcessing: boolean) {
+    if (isProcessing && !this.currentSpinnerState) {
+      this.currentSpinnerState = true;
+      this.spinner.start();
+    } else if (!isProcessing && this.currentSpinnerState) {
+      this.currentSpinnerState = false;
+      this.spinner.stop();
+    }
+  }
+  
+  destroy() {
+    this.spinner.stop();
+    this.spinner = null;
+    this.currentSpinnerState = false;
+  }
+}
+
 const createProgram = () => {
   try {
     let commandExecuted = false;
@@ -470,135 +353,162 @@ const createProgram = () => {
         }
       });
 
-    // Generate the JSON string dynamically based on the examples in featureSpecs
-    const featureExamples = featureSpecs.reduce((acc, feature) => {
-      acc[feature.name] = feature.examples;
-      return acc;
-    }, {});
-    const featureExamplesString = Object.entries(featureExamples)
-      .map(([name, examples]) => {
-        const exampleString = examples.map(example => JSON.stringify(example)).join(', ');
-        return `"${name}", example using json ${exampleString}`;
-      })
-      .join('. ');
-    const parseFeatures = (featuresSpec) => {
-      let features = {};
-      for (const featuresString of featuresSpec) {
-        const parsedJson = jsonParse(featuresString);
-        if (parsedJson !== undefined) {
-          features = {
-            ...features,
-            ...parsedJson,
-          };
-        } else {
-          features[featuresString] = featureExamples[featuresString][0];
-        }
-      }
-      return features;
-    };
+    const createReadlineInputStream = () => {
+      const rl = readline.createInterface({
+        input: process.stdin,
+        // output: process.stdout,
+        // terminal: false,
+      });
+      rl.on('line', (line) => {
+        inputStream.write(line);
+      });
 
+      const inputStream = new PassThrough({
+        objectMode: true,
+      });
+      return inputStream;
+    };
+    const createReadlineOutputStream = () => {
+      const outputStream = new PassThrough({
+        objectMode: true,
+      });
+      outputStream.on('data', (data) => {
+        console.log(data);
+      });
+      return outputStream;
+    };
+    const loadAgent = async (inputFile?: string) => {
+      if (inputFile) {
+        const s = await fs.promises.readFile(inputFile, 'utf8');
+        const abstractAgent = JSON.parse(s) as AbstractAgent;
+        return abstractAgent;
+      } else {
+        return undefined;
+      }
+    };
+    const formatAgent = async (abstractAgent: AbstractAgent, format: string) => {
+      // XXX finish this
+      return abstractAgent;
+    };
+    const saveAgent = async (abstractAgent: AbstractAgent, outputFile: string, format: string) => {
+      const formattedAgent = await formatAgent(abstractAgent, format);
+      const s = JSON.stringify(formattedAgent, null, 2);
+      if (outputFile) {
+        await fs.promises.writeFile(outputFile, s);
+      } else {
+        console.log(s);
+      }
+    };
     program
       .command('create')
       .description('Create a new agent, from either a prompt or template')
-      .argument(`[directory]`, `Directory to create the project in`)
       .option(`-p, --prompt <string>`, `Creation prompt`)
-      .option(`-i, --input <file>`, `Initialize from file (character card)`)
-      .option(`-pfp, --profile-picture <file>`, `Set the profile picture`)
-      .option(`-hs, --home-space <file>`, `Set the home space`)
-      .option(`-j, --json <string>`, `Agent JSON string to initialize with (e.g '{"name": "Ally", "description": "She is cool"}')`)
+      .option(`--profile-picture <file>`, `Set the profile picture`)
+      .option(`--home-space <file>`, `Set the home space`)
+      .option(`-r, --registry <string>`, `Registry to use. ['react-agents', 'elizaos']`)
+      .option(`--format <string>`, `Agent format to output`)
+      .option(`-o, --output <file>`, `Output file`)
       .option(`-y, --yes`, `Non-interactive mode`)
-      .option(`-f, --force`, `Overwrite existing files`)
-      .option(`-n, --no-install`, `Do not install dependencies`)
-      .option(`-F, --force-no-confirm`, `Overwrite existing files without confirming\nUseful for headless environments. ${pc.red('WARNING: Data loss can occur. Use at your own risk.')}`)
-      .option(`-s, --source <string>`, `Main source file for the agent. ${pc.red('REQUIRED: Agent Json string must be provided using -j option')}`)
       .option(
-        `-feat, --feature <feature...>`,
-        `Provide either a feature name or a JSON string with feature details. Default values are used if specifications are not provided. Supported features: ${pc.green(featureExamplesString)}`
+        `--feature <feature...>`,
+        `Provide either a feature name or a JSON string with feature details. Default values are used if specifications are not provided.`
       )
-      .action(async (directory = undefined, opts = {}) => {
-        logUpstreetBanner();
+      .action(async (opts = {}) => {
+        // logUpstreetBanner();
         console.log(`
-
-  Welcome to USDK's Agent Creation process.
-
-  ${pc.cyan(`v${packageJson.version}`)}
+  Welcome to the agent insterview process.
 
   To exit, press CTRL+C twice.
-  If you're customizing the code for this Agent, you may need to reload this chat every time you save.
 
-  ${pc.italic('For more information on the Agent creation process, head over to https://docs.upstreet.ai/create-an-agent#step-2-complete-the-agent-interview')}
-  
 `);
-        await handleError(async () => {
+        // await handleError(async () => {
           commandExecuted = true;
-          let args;
-          if (typeof directory === 'string') {
-            args = {
-              _: [directory],
-              ...opts,
-            };
-          } else {
-            args = {
-              _: [],
-              ...opts,
-            };
-          }
 
-          // if features flag used, check if the feature is a valid JSON string, if so parse accordingly, else use default values
-          if (opts.feature) {
-            args.feature = parseFeatures(opts.feature);
-          }
+          const inputStream = createReadlineInputStream();
+          const outputStream = createReadlineOutputStream();
+          const spinner = new Spinner();
+          const registry = (() => {
+            switch (opts.registry) {
+              case 'elizaos':
+                return new ElizaosRegistry();
+              case 'react-agents':
+              default:
+                return new ReactAgentsRegistry();
+            }
+          })();
+          const args = {
+            prompt: opts.prompt,
+            mode: ((opts.prompt || opts.yes) ? 'auto' : 'interactive') as AgentInterviewMode,
+            inputStream,
+            outputStream,
+            processingCb: spinner.update.bind(spinner),
+            profilePicture: opts.profilePicture,
+            homeSpace: opts.homeSpace,
+            registry,
+          };
 
-          const jwt = await getLoginJwt();
-
-          await create(args, {
-            jwt,
-          });
+          const resultAgent = await createAgent(args);
+          spinner.destroy();
+          await saveAgent(resultAgent, opts.output, opts.format);
+          process.exit(0);
         });
-      });
+      // });
     program
       .command('edit')
       .description('Edit an existing agent')
-      .argument(`[directory]`, `Directory containing the agent to edit`)
+      .argument('[inputFile]', 'Initialize from file (character card)')
       .option(`-p, --prompt <string>`, `Edit prompt`)
-      .option(`-i, --input <file>`, `Update from file (character card)`)
-      .option(`-pfp, --profile-picture <file>`, `Set the profile picture`)
-      .option(`-hs, --home-space <file>`, `Set the home space`)
+      .option(`--profile-picture <file>`, `Set the profile picture`)
+      .option(`--home-space <file>`, `Set the home space`)
+      .option(`-r, --registry <string>`, `Registry to use. ['react-agents', 'elizaos']`)
+      .option(`--format <string>`, `Agent format to output`)
       .option(
-        `-af, --add-feature <feature...>`,
+        `--add, --add-feature <feature...>`,
         `Add a feature`,
       )
       .option(
-        `-rf, --remove-feature <feature...>`,
+        `--remove, --remove-feature <feature...>`,
         `Remove a feature`,
       )
-      .action(async (directory = undefined, opts = {}) => {
-        await handleError(async () => {
+      .action(async (inputFile, opts = {}) => {
+        // await handleError(async () => {
           commandExecuted = true;
-          let args;
-          if (typeof directory === 'string') {
-            args = {
-              _: [directory],
-              ...opts,
-            };
-          } else {
-            args = {
-              _: [],
-              ...opts,
-            };
+
+          if (!inputFile) {
+            throw new Error('Input file is required');
           }
 
-          if (opts.addFeature) {
-            args.addFeature = parseFeatures(opts.addFeature);
-          }
+          const agent = await loadAgent(inputFile);
+          const inputStream = createReadlineInputStream();
+          const outputStream = createReadlineOutputStream();
+          const spinner = new Spinner();
+          const registry = (() => {
+            switch (opts.registry) {
+              case 'elizaos':
+                return new ElizaosRegistry();
+              case 'react-agents':
+              default:
+                return new ReactAgentsRegistry();
+            }
+          })();
+          const args = {
+            agent,
+            prompt: opts.prompt,
+            mode: ((opts.prompt || opts.yes) ? 'auto' : 'edit') as AgentInterviewMode,
+            inputStream,
+            outputStream,
+            processingCb: spinner.update.bind(spinner),
+            profilePicture: opts.profilePicture,
+            homeSpace: opts.homeSpace,
+            registry,
+          };
 
-          const jwt = await getLoginJwt();
-
-          await edit(args, {
-            jwt,
-          });
+          const resultAgent = await editAgent(args);
+          spinner.destroy();
+          await saveAgent(resultAgent, inputFile, opts.format);
+          process.exit(0);
         });
-      });
+      // });
   } catch (error) {
     console.error("Error creating program:", error);
   }
@@ -606,6 +516,7 @@ const createProgram = () => {
 };
 
 export const main = async () => {
+  dotenv.config();
   createProgram();
   try {
     await program.parseAsync();

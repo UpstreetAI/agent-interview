@@ -1,66 +1,107 @@
 import { Readable, Writable } from 'stream';
 import {
   runInterview,
-} from './cli.ts';
+  type ProcessingCb,
+} from './lib/run-interview.ts';
+import {
+  type AgentInterviewMode,
+} from './lib/agent-interview.ts';
+import {
+  type AbstractAgent,
+} from './types/agent.ts';
 import {
   type AbstractRegistry,
 } from './types/registry.ts';
 import {
   createAbstractAgent,
 } from './lib/agent.ts';
-// import {
-//   ElizaosRegistry,
-// } from './registries/elizaos/elizaos-registry.ts';
-import {
-  ReactAgentsRegistry,
-} from './registries/react-agents/react-agents-registry.ts';
 
 //
 
+export const eventMessages = [
+  'avatar',
+  'homespace',
+  'name',
+  'bio',
+  'description',
+  'features',
+  'change',
+];
 export const createAgent = async ({
   prompt,
+  mode,
   inputStream,
   outputStream,
   errorStream,
   events,
-  input,
+  processingCb,
   profilePicture,
   homeSpace,
-  json = {},
-  registry = new ReactAgentsRegistry(),
-  features = [],
-  format = 'react-agents',
+  registry,
 }: {
   prompt?: string;
+  mode?: AgentInterviewMode;
   inputStream?: Readable;
   outputStream?: Writable;
   errorStream?: Writable;
   events?: EventTarget;
+  processingCb?: ProcessingCb;
   input?: string;
   profilePicture?: string;
   homeSpace?: string;
-  json?: object;
-  registry?: AbstractRegistry;
+  registry: AbstractRegistry;
   features?: string[];
-  format?: string;
 }) => {
-  let agentJson = createAbstractAgent();
-  agentJson = await runInterview(agentJson, {
+  let agent = createAbstractAgent();
+  agent = await runInterview(agent, {
     prompt,
-    mode: 'auto',
+    mode,
     inputStream,
     outputStream,
     errorStream,
     events,
+    processingCb,
     registry,
   });
-  return agentJson;
+  return agent;
 };
 
-// export const editAgent = async ({
-
-// }: {
-    
-// }) => {
-
-// };
+export const editAgent = async ({
+  agent = createAbstractAgent(),
+  prompt,
+  mode,
+  inputStream,
+  outputStream,
+  errorStream,
+  events,
+  processingCb,
+  profilePicture,
+  homeSpace,
+  registry,
+}: {
+  agent?: AbstractAgent;
+  prompt?: string;
+  mode?: AgentInterviewMode;
+  inputStream?: Readable;
+  outputStream?: Writable;
+  errorStream?: Writable;
+  events?: EventTarget;
+  processingCb?: ProcessingCb;
+  input?: string;
+  profilePicture?: string;
+  homeSpace?: string;
+  registry: AbstractRegistry;
+  features?: string[];
+}) => {
+  agent = await runInterview(agent, {
+    prompt,
+    mode,
+    inputStream,
+    outputStream,
+    errorStream,
+    events,
+    processingCb,
+    registry,
+  });
+  return agent;
+};

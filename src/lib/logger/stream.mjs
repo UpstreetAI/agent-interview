@@ -1,23 +1,20 @@
-import readline from 'readline';
 import util from 'util';
 
 class StreamStrategy {
   constructor(inputStream, outputStream) {
-    this.rl = readline.createInterface({
-      input: inputStream,
-      output: outputStream,
-    });
+    this.inputStream = inputStream;
+    this.outputStream = outputStream;
   }
 
   async askQuestion(question) {
     for (;;) {
       const answer = await new Promise((resolve) => {
-        this.rl.question(
-          question,
-          (answer) => {
-            resolve(answer.trim());
-          },
-        );
+        this.outputStream.write(question);
+        this.inputStream.resume();
+        this.inputStream.once('data', (data) => {
+          resolve(data);
+          this.inputStream.pause();
+        });
       });
       if (answer) {
         return answer;
@@ -36,11 +33,11 @@ class StreamStrategy {
         });
       }
     });
-    this.rl.output.write(formattedArgs.join(' ') + '\n');
+    this.outputStream.write(formattedArgs.join(' '));
   }
 
   close() {
-    this.rl.close();
+    this.outputStream.end();
   }
 }
 

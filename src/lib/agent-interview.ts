@@ -25,15 +25,20 @@ import {
   generateBackgroundImage,
 } from './generate-image.mjs';
 
-const makePromise = <T>() => {
+type ResolvablePromise<T> = Promise<T> & {
+  resolve: (value: T) => void;
+  reject: (reason?: any) => void;
+};
+const makePromise = <T>(): ResolvablePromise<T> => {
   const {
     promise,
     resolve,
     reject,
   } = Promise.withResolvers<T>();
-  (promise as any).resolve = resolve;
-  (promise as any).reject = reject;
-  return promise;
+  const resolvablePromise = promise as ResolvablePromise<T>;
+  resolvablePromise.resolve = resolve;
+  resolvablePromise.reject = reject;
+  return resolvablePromise;
 };
 const pluginParametersToZod = (pluginParameters: Record<string, any>) => {
   const result = {};
@@ -82,14 +87,15 @@ const generateFeaturePrompt = (featureSpecs: PluginConfigExt[]) => {
   }), null, 2) + '\n\n';
 };
 
+export type AgentInterviewMode = 'auto' | 'interactive' | 'manual' | 'edit';
 export class AgentInterview extends EventTarget {
   interactor: Interactor;
-  loadPromise: Promise<AbstractAgent>;
+  loadPromise: ResolvablePromise<AbstractAgent>;
 
   constructor(opts: {
     agentJson: AbstractAgent;
     prompt: string;
-    mode: 'auto' | 'interactive' | 'manual' | 'edit';
+    mode: AgentInterviewMode;
     featureSpecs: PluginConfigExt[];
   }) {
     super();
